@@ -214,6 +214,7 @@ def api_validate_discount():
         "amount": discount.amount
     })
 
+
 @app.route('/api/checkout', methods=['POST'])
 def api_checkout():
     if not request.is_json:
@@ -268,11 +269,17 @@ def api_checkout():
         price = item.get('price', 0)
         
         if product_id and quantity > 0:
+            # Get product to store its details
+            product = Product.query.get(product_id)
+            
             order_item = OrderItem(
                 order_id=order.id,
                 product_id=product_id,
                 quantity=quantity,
-                price=price
+                price=price,
+                # Store product details for future reference in case product is deleted
+                product_name=product.name if product else None,
+                product_price=product.price if product else price
             )
             db.session.add(order_item)
     
@@ -428,12 +435,16 @@ def admin_edit_product(pid):
 @admin_required
 def admin_delete_product(pid):
     product = Product.query.get_or_404(pid)
-    db.session.delete(product)
-    db.session.commit()
-    flash("Product deleted successfully", "success")
+    try:
+        db.session.delete(product)
+        db.session.commit()
+        flash("Product deleted successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error deleting product: {str(e)}", "danger")
+    
     return redirect(url_for('admin_products'))
 
-# Admin routes - Discount codes
 @app.route('/admin/discounts')
 @admin_required
 def admin_discounts():
