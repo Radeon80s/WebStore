@@ -463,34 +463,40 @@ def admin_create_discount():
     code = sanitize_input(request.form.get('code', '').strip().upper())
     discount_type = sanitize_input(request.form.get('type', '').strip())
     amount_str = request.form.get('amount', '0')
+    expires_str = request.form.get('expires_at', '')
     
+    # Validate required fields
     if not code or not discount_type:
         flash("Code and type are required", "danger")
         return redirect(url_for('admin_discounts'))
     
+    # Check if discount code already exists
     if DiscountCode.query.filter_by(code=code).first():
         flash("Discount code already exists", "danger")
         return redirect(url_for('admin_discounts'))
     
+    # Validate amount
     try:
         amount = float(amount_str)
         if amount <= 0:
             flash("Amount must be greater than 0", "danger")
             return redirect(url_for('admin_discounts'))
+        
+        # Additional validation for percentage type
+        if discount_type == 'percent' and (amount < 1 or amount > 100):
+            flash("Percentage must be between 1 and 100", "danger")
+            return redirect(url_for('admin_discounts'))
     except ValueError:
         flash("Invalid amount", "danger")
         return redirect(url_for('admin_discounts'))
     
+    # Validate discount type
     if discount_type not in ['percent', 'flat']:
         flash("Type must be 'percent' or 'flat'", "danger")
         return redirect(url_for('admin_discounts'))
     
-    if discount_type == 'percent' and (amount < 1 or amount > 100):
-        flash("Percentage must be between 1 and 100", "danger")
-        return redirect(url_for('admin_discounts'))
-    
+    # Parse expiry date if provided
     expires_at = None
-    expires_str = request.form.get('expires_at', '')
     if expires_str:
         try:
             expires_at = datetime.strptime(expires_str, '%Y-%m-%d')
@@ -498,18 +504,24 @@ def admin_create_discount():
             flash("Invalid expiry date format. Use YYYY-MM-DD", "danger")
             return redirect(url_for('admin_discounts'))
     
-    discount = DiscountCode(
-        code=code,
-        type=discount_type,
-        amount=amount,
-        active=True,
-        expires_at=expires_at
-    )
+    # Create and save the discount
+    try:
+        discount = DiscountCode(
+            code=code,
+            type=discount_type,
+            amount=amount,
+            active=True,
+            expires_at=expires_at
+        )
+        
+        db.session.add(discount)
+        db.session.commit()
+        
+        flash("Discount code created successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error creating discount: {str(e)}", "danger")
     
-    db.session.add(discount)
-    db.session.commit()
-    
-    flash("Discount code created successfully!", "success")
     return redirect(url_for('admin_discounts'))
 
 @app.route('/admin/discounts/<int:discount_id>/toggle', methods=['POST'])
