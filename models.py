@@ -20,6 +20,117 @@ def init_db(app):
 
     with app.app_context():
         db.create_all()
+        
+        # Run the one-time migration
+        run_one_time_migration(app)
+
+
+def run_one_time_migration(app):
+    """
+    Run a one-time migration to fix the product deletion constraint issue.
+    This function will:
+    1. Add product_name and product_price columns to order_items if they don't exist
+    2. Copy product data to these columns for existing orders
+    3. Drop the NOT NULL constraint on product_id
+    4. Add ON DELETE SET NULL to the foreign key constraint
+    """
+    # Check if migration has already been run (using a table column as indicator)
+    with app.app_context():
+        # First, check if the columns already exist, which indicates migration was done
+        column_check = db.session.execute("""
+        SELECT EXISTS (
+            SELECT 1 
+            FROM information_schema.columns 
+            WHERE table_name='order_items' AND column_name='product_name'
+        );
+        """).scalar()
+        
+        # If product_name column exists, migration might have been done already
+        if column_check:
+            # Check if product_id is already nullable
+            nullable_check = db.session.execute("""
+            SELECT is_nullable 
+            FROM information_schema.columns 
+            WHERE table_name='order_items' AND column_name='product_id';
+            """).scalar()
+            
+            if nullable_check == 'YES':
+                # Migration already completed
+                print("✅ Product deletion migration already completed")
+                return
+        
+        try:
+            print("🔄 Running one-time migration to fix product deletion...")
+            
+            # 1. Add product_name and product_price columns if they don't exist
+            db.session.execute("""
+            DO $$
+            BEGIN
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                            WHERE table_name='order_items' AND column_name='product_name') THEN
+                    ALTER TABLE order_items ADD COLUMN product_name VARCHAR(120);
+                END IF;
+                
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                            WHERE table_name='order_items' AND column_name='product_price') THEN
+                    ALTER TABLE order_items ADD COLUMN product_price FLOAT;
+                END IF;
+            END
+            $$;
+            """)
+            print("✅ Added product_name and product_price columns if needed")
+
+            # 2. Copy product data to the backup columns for existing orders
+            order_items = OrderItem.query.all()
+            for item in order_items:
+                if item.product_id and (item.product_name is None or item.product_price is None):
+                    product = Product.query.get(item.product_id)
+                    if product:
+                        item.product_name = product.name
+                        item.product_price = product.price
+            db.session.commit()
+            print("✅ Copied product data to backup columns")
+
+            # 3. Drop the foreign key constraint
+            db.session.execute("""
+            DO $$
+            DECLARE
+                constraint_name VARCHAR;
+            BEGIN
+                SELECT tc.constraint_name INTO constraint_name
+                FROM information_schema.table_constraints tc
+                JOIN information_schema.constraint_column_usage ccu ON tc.constraint_name = ccu.constraint_name
+                WHERE tc.table_name = 'order_items' 
+                AND tc.constraint_type = 'FOREIGN KEY' 
+                AND ccu.column_name = 'product_id';
+                
+                IF constraint_name IS NOT NULL THEN
+                    EXECUTE 'ALTER TABLE order_items DROP CONSTRAINT ' || constraint_name;
+                END IF;
+            END
+            $$;
+            """)
+            print("✅ Dropped foreign key constraint")
+
+            # 4. Make product_id nullable
+            db.session.execute("ALTER TABLE order_items ALTER COLUMN product_id DROP NOT NULL;")
+            print("✅ Made product_id nullable")
+
+            # 5. Re-add the foreign key with ON DELETE SET NULL
+            db.session.execute("""
+            ALTER TABLE order_items
+            ADD CONSTRAINT fk_order_items_product
+            FOREIGN KEY (product_id)
+            REFERENCES products(id)
+            ON DELETE SET NULL;
+            """)
+            print("✅ Added new foreign key with ON DELETE SET NULL")
+            
+            print("✅ Migration completed successfully! You can now delete products without constraints.")
+            
+        except Exception as e:
+            print(f"❌ Error during migration: {str(e)}")
+            db.session.rollback()
 
 
 class User(db.Model):
@@ -119,15 +230,21 @@ class OrderItem(db.Model):
     __tablename__ = 'order_items'
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id', ondelete='SET NULL'), nullable=True)
+    product_name = db.Column(db.String(120), nullable=True)  # Store product name for history
+    product_price = db.Column(db.Float, nullable=True)  # Store product price for history
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)  # Price at time of purchase
     
     def to_dict(self):
+        product_name = self.product_name
+        if not product_name and self.product:
+            product_name = self.product.name
+            
         return {
             "id": self.id,
             "product_id": self.product_id,
-            "product_name": self.product.name,
+            "product_name": product_name or "Deleted Product",
             "quantity": self.quantity,
             "price": self.price,
             "total": self.price * self.quantity
