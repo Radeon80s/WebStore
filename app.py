@@ -442,7 +442,8 @@ def admin_discounts():
         'admin/discounts.html', 
         discounts=discounts,
         active_tab='discounts',
-        now=datetime.utcnow()
+        now=datetime.utcnow(),
+        timedelta=timedelta
     )
 
 @app.route('/admin/discounts/create', methods=['POST'])
