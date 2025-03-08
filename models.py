@@ -34,25 +34,28 @@ def run_one_time_migration(app):
     3. Drop the NOT NULL constraint on product_id
     4. Add ON DELETE SET NULL to the foreign key constraint
     """
+    # Import text from sqlalchemy
+    from sqlalchemy import text
+    
     # Check if migration has already been run (using a table column as indicator)
     with app.app_context():
         # First, check if the columns already exist, which indicates migration was done
-        column_check = db.session.execute("""
+        column_check = db.session.execute(text("""
         SELECT EXISTS (
             SELECT 1 
             FROM information_schema.columns 
             WHERE table_name='order_items' AND column_name='product_name'
         );
-        """).scalar()
+        """)).scalar()
         
         # If product_name column exists, migration might have been done already
         if column_check:
             # Check if product_id is already nullable
-            nullable_check = db.session.execute("""
+            nullable_check = db.session.execute(text("""
             SELECT is_nullable 
             FROM information_schema.columns 
             WHERE table_name='order_items' AND column_name='product_id';
-            """).scalar()
+            """)).scalar()
             
             if nullable_check == 'YES':
                 # Migration already completed
@@ -63,7 +66,7 @@ def run_one_time_migration(app):
             print("🔄 Running one-time migration to fix product deletion...")
             
             # 1. Add product_name and product_price columns if they don't exist
-            db.session.execute("""
+            db.session.execute(text("""
             DO $$
             BEGIN
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
@@ -77,7 +80,7 @@ def run_one_time_migration(app):
                 END IF;
             END
             $$;
-            """)
+            """))
             print("✅ Added product_name and product_price columns if needed")
 
             # 2. Copy product data to the backup columns for existing orders
@@ -92,7 +95,7 @@ def run_one_time_migration(app):
             print("✅ Copied product data to backup columns")
 
             # 3. Drop the foreign key constraint
-            db.session.execute("""
+            db.session.execute(text("""
             DO $$
             DECLARE
                 constraint_name VARCHAR;
@@ -109,21 +112,21 @@ def run_one_time_migration(app):
                 END IF;
             END
             $$;
-            """)
+            """))
             print("✅ Dropped foreign key constraint")
 
             # 4. Make product_id nullable
-            db.session.execute("ALTER TABLE order_items ALTER COLUMN product_id DROP NOT NULL;")
+            db.session.execute(text("ALTER TABLE order_items ALTER COLUMN product_id DROP NOT NULL;"))
             print("✅ Made product_id nullable")
 
             # 5. Re-add the foreign key with ON DELETE SET NULL
-            db.session.execute("""
+            db.session.execute(text("""
             ALTER TABLE order_items
             ADD CONSTRAINT fk_order_items_product
             FOREIGN KEY (product_id)
             REFERENCES products(id)
             ON DELETE SET NULL;
-            """)
+            """))
             print("✅ Added new foreign key with ON DELETE SET NULL")
             
             print("✅ Migration completed successfully! You can now delete products without constraints.")
@@ -131,7 +134,6 @@ def run_one_time_migration(app):
         except Exception as e:
             print(f"❌ Error during migration: {str(e)}")
             db.session.rollback()
-
 
 class User(db.Model):
     __tablename__ = 'users'
