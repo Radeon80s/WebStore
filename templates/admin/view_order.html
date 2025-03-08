@@ -38,6 +38,7 @@
               <tr>
                 <td>
                   <div class="d-flex align-items-center">
+                    {% if item.product %}
                     <img src="{{ item.product.image }}" alt="{{ item.product.name }}" class="me-3" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
                     <div>
                       <h6 class="mb-0">{{ item.product.name }}</h6>
@@ -45,6 +46,15 @@
                       <small class="text-muted">{{ item.product.category }}</small>
                       {% endif %}
                     </div>
+                    {% else %}
+                    <div class="bg-light me-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 5px;">
+                      <i class="fas fa-box text-muted"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0">{{ item.product_name or "Deleted Product" }}</h6>
+                      <small class="text-danger">Product no longer available</small>
+                    </div>
+                    {% endif %}
                   </div>
                 </td>
                 <td class="text-center">${{ "%.2f"|format(item.price) }}</td>
