@@ -37,8 +37,7 @@
     </div>
     <div class="content">
       <p class="title">Expiring Soon</p>
-      <h3 class="value">{{ discounts|selectattr('active', 'equalto', true)|selectattr('expires_at', 'defined')|selectattr('expires_at', 'ge', now)|selectattr('expires_at', 'le', now + timedelta(days=7))|list|length }}</h3>
-    </div>
+  <h3 class="value">{{ discounts|selectattr('active', 'equalto', true)|selectattr('expires_at', 'ne', none)|selectattr('expires_at', 'ge', now)|selectattr('expires_at', 'le', now + timedelta(days=7))|list|length }}</h3>    </div>
   </div>
   
   <div class="stat-card info">
