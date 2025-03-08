@@ -39,17 +39,6 @@
       <p class="title">Expiring Soon</p>
   <h3 class="value">{{ discounts|selectattr('active', 'equalto', true)|selectattr('expires_at', 'ne', none)|selectattr('expires_at', 'ge', now)|selectattr('expires_at', 'le', now + timedelta(days=7))|list|length }}</h3>    </div>
   </div>
-  
-  <div class="stat-card info">
-    <div class="icon">
-      <i class="fas fa-percent"></i>
-    </div>
-    <div class="content">
-      <p class="title">Percent Discounts</p>
-      <h3 class="value">{{ discounts|selectattr('type', 'equalto', 'percent')|list|length }}</h3>
-    </div>
-  </div>
-</div>
 
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
