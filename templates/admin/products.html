@@ -1,0 +1,352 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Products | SweetBites Admin{% endblock %}
+{% block page_title %}Product Management{% endblock %}
+
+{% block page_actions %}
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+  <i class="fas fa-plus me-1"></i> Add New Product
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div>
+      <i class="fas fa-box"></i> Product List
+    </div>
+    <div class="d-flex align-items-center">
+      <div class="input-group input-group-sm me-2" style="width: 250px;">
+        <input type="text" class="form-control" id="searchProducts" placeholder="Search products...">
+        <button class="btn btn-outline-secondary" type="button" id="searchBtn">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+      <div class="dropdown">
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="categoryFilterBtn" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fas fa-filter me-1"></i> Filter
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="categoryFilterBtn">
+          <li><a class="dropdown-item filter-item" href="#" data-category="">All Categories</a></li>
+          <li><hr class="dropdown-divider"></li>
+          {% for category in categories %}
+          <li><a class="dropdown-item filter-item" href="#" data-category="{{ category }}">{{ category }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="card-body p-0">
+    {% if products %}
+    <div class="table-responsive">
+      <table class="table table-hover" id="productsTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Category</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in products %}
+          <tr data-category="{{ product.category }}">
+            <td>{{ product.id }}</td>
+            <td><img src="{{ product.image | e }}" alt="{{ product.name | e }}"></td>
+            <td>{{ product.name | e }}</td>
+            <td>${{ "%.2f"|format(product.price) }}</td>
+            <td>
+              {% if product.category %}
+              <span class="badge bg-light text-dark">{{ product.category }}</span>
+              {% else %}
+              <span class="badge bg-light text-secondary">Uncategorized</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="action-btn-group">
+                <a href="{{ url_for('admin_edit_product', pid=product.id) }}" class="btn btn-sm btn-primary">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#viewProductModal" 
+                        data-id="{{ product.id }}" 
+                        data-name="{{ product.name | e }}" 
+                        data-price="{{ product.price }}" 
+                        data-image="{{ product.image | e }}"
+                        data-category="{{ product.category | e }}"
+                        data-description="{{ product.description | e }}">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProductModal"
+                        data-id="{{ product.id }}" data-name="{{ product.name | e }}">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="p-5 text-center">
+      <i class="fas fa-box-open fa-3x mb-3 text-muted"></i>
+      <h5>No Products Found</h5>
+      <p class="text-muted mb-3">Add your first product to get started.</p>
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+        <i class="fas fa-plus me-1"></i> Add New Product
+      </button>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="{{ url_for('admin_create_product') }}" method="POST">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-8">
+              <div class="mb-3">
+                <label for="name" class="form-label">Product Name *</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="price" class="form-label">Price ($) *</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" required>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="category" class="form-label">Category</label>
+            <select class="form-select" id="category" name="category">
+              <option value="">-- Select Category --</option>
+              {% for category in categories %}
+              <option value="{{ category }}">{{ category }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label for="image" class="form-label">Image URL *</label>
+            <input type="url" class="form-control" id="image" name="image" required>
+            <div class="form-text">Enter a valid URL for the product image (must start with http:// or https://)</div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+          </div>
+          
+          <div class="form-check mb-3" id="imagePreviewContainer" style="display: none;">
+            <div class="mt-2">
+              <label class="form-label">Image Preview:</label>
+              <div class="text-center p-3 border rounded">
+                <img id="imagePreview" src="" alt="Image Preview" style="max-height: 200px; max-width: 100%;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- View Product Modal -->
+<div class="modal fade" id="viewProductModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Product Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-5">
+            <div class="text-center mb-3">
+              <img src="" id="modalImage" alt="Product Image" class="img-fluid rounded" style="max-height: 250px;">
+            </div>
+          </div>
+          <div class="col-md-7">
+            <h4 id="modalName"></h4>
+            <p class="text-primary fw-bold fs-4" id="modalPrice"></p>
+            
+            <div class="mb-3">
+              <span class="badge bg-light text-dark" id="modalCategory"></span>
+            </div>
+            
+            <div class="mb-3">
+              <h6>Description</h6>
+              <p id="modalDescription" class="text-muted"></p>
+            </div>
+            
+            <div class="mb-3">
+              <h6>Product ID</h6>
+              <p id="modalId" class="text-muted"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="#" id="editProductLink" class="btn btn-primary">
+          <i class="fas fa-edit me-1"></i> Edit
+        </a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Product Modal -->
+<div class="modal fade" id="deleteProductModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger">Confirm Delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete the product "<span id="deleteProductName"></span>"?</p>
+        <p class="text-danger"><strong>This action cannot be undone.</strong></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form id="deleteProductForm" action="" method="POST">
+          <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash me-1"></i> Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Image Preview in Add Product Modal
+    const imageUrl = document.getElementById('image');
+    const imagePreview = document.getElementById('imagePreview');
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    
+    imageUrl.addEventListener('input', function() {
+      if (this.value && this.validity.valid) {
+        imagePreview.src = this.value;
+        imagePreviewContainer.style.display = 'block';
+      } else {
+        imagePreviewContainer.style.display = 'none';
+      }
+    });
+    
+    // View Product Modal
+    const viewProductModal = document.getElementById('viewProductModal');
+    if (viewProductModal) {
+      viewProductModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+        const price = button.getAttribute('data-price');
+        const image = button.getAttribute('data-image');
+        const category = button.getAttribute('data-category');
+        const description = button.getAttribute('data-description');
+        
+        document.getElementById('modalId').textContent = id;
+        document.getElementById('modalName').textContent = name;
+        document.getElementById('modalPrice').textContent = '$' + parseFloat(price).toFixed(2);
+        document.getElementById('modalImage').src = image;
+        document.getElementById('modalCategory').textContent = category || 'Uncategorized';
+        document.getElementById('modalDescription').textContent = description || 'No description available.';
+        
+        document.getElementById('editProductLink').href = '/admin/products/' + id + '/edit';
+      });
+    }
+    
+    // Delete Product Modal
+    const deleteProductModal = document.getElementById('deleteProductModal');
+    if (deleteProductModal) {
+      deleteProductModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+        
+        document.getElementById('deleteProductName').textContent = name;
+        document.getElementById('deleteProductForm').action = '/admin/products/' + id + '/delete';
+      });
+    }
+    
+    // Search functionality
+    const searchInput = document.getElementById('searchProducts');
+    const searchBtn = document.getElementById('searchBtn');
+    
+    function searchProducts() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const rows = document.querySelectorAll('#productsTable tbody tr');
+      
+      rows.forEach(row => {
+        const name = row.cells[2].textContent.toLowerCase();
+        const id = row.cells[0].textContent.toLowerCase();
+        const category = row.cells[4].textContent.toLowerCase();
+        
+        if (name.includes(searchTerm) || id.includes(searchTerm) || category.includes(searchTerm)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+    
+    if (searchInput) {
+      searchInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+          searchProducts();
+        }
+      });
+    }
+    
+    if (searchBtn) {
+      searchBtn.addEventListener('click', searchProducts);
+    }
+    
+    // Category filtering
+    const filterItems = document.querySelectorAll('.filter-item');
+    
+    filterItems.forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const category = this.getAttribute('data-category');
+        const rows = document.querySelectorAll('#productsTable tbody tr');
+        
+        rows.forEach(row => {
+          if (!category || row.getAttribute('data-category') === category) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+        
+        // Update dropdown button text
+        document.getElementById('categoryFilterBtn').innerHTML = '<i class="fas fa-filter me-1"></i> ' + (category || 'All Categories');
+      });
+    });
+  });
+</script>
+{% endblock %}
