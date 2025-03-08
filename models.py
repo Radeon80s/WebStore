@@ -20,6 +20,43 @@ def init_db(app):
 
     with app.app_context():
         db.create_all()
+    add_missing_columns(app)
+
+def add_missing_columns(app):
+    with app.app_context():
+        from sqlalchemy import text, inspect
+        
+        engine = db.engine
+        inspector = inspect(engine)
+        
+        try:
+            existing_product_columns = [col['name'] for col in inspector.get_columns('products')]
+            
+            if 'category' not in existing_product_columns:
+                db.session.execute(text("ALTER TABLE products ADD COLUMN category VARCHAR(50)"))
+                print("Added 'category' column to products table")
+            
+            if 'description' not in existing_product_columns:
+                db.session.execute(text("ALTER TABLE products ADD COLUMN description TEXT"))
+                print("Added 'description' column to products table")
+                
+            if 'created_at' not in existing_product_columns:
+                db.session.execute(text("ALTER TABLE products ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"))
+                print("Added 'created_at' column to products table")
+            
+            existing_user_columns = [col['name'] for col in inspector.get_columns('users')]
+            
+            if 'created_at' not in existing_user_columns:
+                db.session.execute(text("ALTER TABLE users ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"))
+                print("Added 'created_at' column to users table")
+            
+            db.session.commit()
+            print("All missing columns added successfully!")
+            
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error adding missing columns: {str(e)}")
+            raise
 
 class User(db.Model):
     __tablename__ = 'users'
