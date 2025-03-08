@@ -1,0 +1,263 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Order #{{ order.id }} | SweetBites Admin{% endblock %}
+{% block page_title %}Order #{{ order.id }} Details{% endblock %}
+
+{% block page_actions %}
+<a href="{{ url_for('admin_orders') }}" class="btn btn-secondary">
+  <i class="fas fa-arrow-left me-1"></i> Back to Orders
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-8">
+    <!-- Order Items -->
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+          <i class="fas fa-box"></i> Order Items
+        </div>
+        <span class="badge {% if order.status == 'pending' %}bg-warning text-dark{% elif order.status == 'processing' %}bg-primary{% elif order.status == 'shipped' %}bg-info{% elif order.status == 'delivered' %}bg-success{% elif order.status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">
+          {{ order.status|title }}
+        </span>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th class="text-center">Price</th>
+                <th class="text-center">Quantity</th>
+                <th class="text-end">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in order.items %}
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <img src="{{ item.product.image }}" alt="{{ item.product.name }}" class="me-3" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                    <div>
+                      <h6 class="mb-0">{{ item.product.name }}</h6>
+                      {% if item.product.category %}
+                      <small class="text-muted">{{ item.product.category }}</small>
+                      {% endif %}
+                    </div>
+                  </div>
+                </td>
+                <td class="text-center">${{ "%.2f"|format(item.price) }}</td>
+                <td class="text-center">{{ item.quantity }}</td>
+                <td class="text-end">${{ "%.2f"|format(item.price * item.quantity) }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot class="table-group-divider">
+              <tr>
+                <th colspan="3" class="text-end">Subtotal:</th>
+                <th class="text-end">${{ "%.2f"|format(order.subtotal) }}</th>
+              </tr>
+              <tr>
+                <td colspan="3" class="text-end">Discount:</td>
+                <td class="text-end">-${{ "%.2f"|format(order.discount_amount) }}</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="text-end">Shipping:</td>
+                <td class="text-end">${{ "%.2f"|format(order.shipping_cost) }}</td>
+              </tr>
+              <tr>
+                <th colspan="3" class="text-end">Total:</th>
+                <th class="text-end text-primary fs-5">${{ "%.2f"|format(order.total) }}</th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Order Timeline -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <i class="fas fa-history"></i> Order Status
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label for="status" class="form-label">Current Status</label>
+          <form action="{{ url_for('admin_update_order', order_id=order.id) }}" method="POST" class="d-flex">
+            <select class="form-select me-2" id="status" name="status">
+              {% for status in statuses %}
+              <option value="{{ status }}" {% if order.status == status %}selected{% endif %}>{{ status|title }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary">Update Status</button>
+          </form>
+        </div>
+        
+        <!-- Status Timeline -->
+        <div class="position-relative mt-4 pt-2">
+          <div class="position-absolute top-0 start-0 bottom-0 border-start border-2 ms-2 mt-1"></div>
+          
+          <div class="d-flex mb-3">
+            <div class="me-3 position-relative">
+              <div class="bg-success rounded-circle p-2" style="width: 10px; height: 10px; margin-left: -5px;"></div>
+            </div>
+            <div>
+              <p class="mb-0 fw-bold">Order Created</p>
+              <p class="text-muted small mb-0">{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+            </div>
+          </div>
+          
+          <div class="d-flex mb-3">
+            <div class="me-3 position-relative">
+              <div class="{% if order.status == 'pending' or order.status == 'processing' or order.status == 'shipped' or order.status == 'delivered' %}bg-success{% else %}bg-secondary{% endif %} rounded-circle p-2" style="width: 10px; height: 10px; margin-left: -5px;"></div>
+            </div>
+            <div>
+              <p class="mb-0 fw-bold">Order Processing</p>
+              <p class="text-muted small mb-0">{% if order.status == 'pending' %}Pending{% elif order.status == 'processing' or order.status == 'shipped' or order.status == 'delivered' %}In Progress{% else %}Cancelled{% endif %}</p>
+            </div>
+          </div>
+          
+          <div class="d-flex mb-3">
+            <div class="me-3 position-relative">
+              <div class="{% if order.status == 'shipped' or order.status == 'delivered' %}bg-success{% else %}bg-secondary{% endif %} rounded-circle p-2" style="width: 10px; height: 10px; margin-left: -5px;"></div>
+            </div>
+            <div>
+              <p class="mb-0 fw-bold">Order Shipped</p>
+              <p class="text-muted small mb-0">{% if order.status == 'shipped' or order.status == 'delivered' %}Shipped{% else %}Waiting{% endif %}</p>
+            </div>
+          </div>
+          
+          <div class="d-flex">
+            <div class="me-3 position-relative">
+              <div class="{% if order.status == 'delivered' %}bg-success{% else %}bg-secondary{% endif %} rounded-circle p-2" style="width: 10px; height: 10px; margin-left: -5px;"></div>
+            </div>
+            <div>
+              <p class="mb-0 fw-bold">Order Delivered</p>
+              <p class="text-muted small mb-0">{% if order.status == 'delivered' %}Completed{% else %}Waiting{% endif %}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-4">
+    <!-- Customer Info -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <i class="fas fa-user"></i> Customer Information
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <h6 class="text-muted mb-1">Customer Name:</h6>
+          <p class="mb-0">{{ order.customer_name or 'Not provided' }}</p>
+        </div>
+        <div class="mb-3">
+          <h6 class="text-muted mb-1">Email:</h6>
+          <p class="mb-0">{{ order.customer_email or 'Not provided' }}</p>
+        </div>
+        <div>
+          <h6 class="text-muted mb-1">Shipping Address:</h6>
+          <p class="mb-0">{{ order.shipping_address or 'Not provided' }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Order Summary -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <i class="fas fa-info-circle"></i> Order Summary
+      </div>
+      <div class="card-body">
+        <table class="table table-sm table-borderless mb-0">
+          <tr>
+            <th class="ps-0">Order ID:</th>
+            <td>{{ order.id }}</td>
+          </tr>
+          <tr>
+            <th class="ps-0">Date:</th>
+            <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          </tr>
+          <tr>
+            <th class="ps-0">Last Updated:</th>
+            <td>{{ order.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          </tr>
+          <tr>
+            <th class="ps-0">Payment Status:</th>
+            <td><span class="badge bg-success">Paid</span></td>
+          </tr>
+          <tr>
+            <th class="ps-0">Discount Code:</th>
+            <td>
+              {% if order.discount_code %}
+              <span class="badge bg-info">{{ order.discount_code.code }}</span>
+              {% else %}
+              <span class="text-muted">None</span>
+              {% endif %}
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Actions -->
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-cog"></i> Actions
+      </div>
+      <div class="card-body">
+        <div class="d-grid gap-2">
+          <button type="button" class="btn btn-outline-primary" id="printInvoiceBtn">
+            <i class="fas fa-print me-1"></i> Print Invoice
+          </button>
+          {% if order.status != 'cancelled' %}
+          <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+            <i class="fas fa-ban me-1"></i> Cancel Order
+          </button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cancel Order Modal -->
+<div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger">Confirm Cancel Order</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to cancel order #{{ order.id }}?</p>
+        <p class="text-danger"><strong>This action cannot be undone.</strong></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <form action="{{ url_for('admin_update_order', order_id=order.id) }}" method="POST">
+          <input type="hidden" name="status" value="cancelled">
+          <button type="submit" class="btn btn-danger">
+            <i class="fas fa-ban me-1"></i> Cancel Order
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Print Invoice
+    const printInvoiceBtn = document.getElementById('printInvoiceBtn');
+    if (printInvoiceBtn) {
+      printInvoiceBtn.addEventListener('click', function() {
+        window.print();
+      });
+    }
+  });
+</script>
+{% endblock %}

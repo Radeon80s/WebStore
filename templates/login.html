@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - SweetBites</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #0069d9;
+      --primary-dark: #004c9e;
+      --primary-light: #4da6ff;
+      --secondary: #ff7e5f;
+      --secondary-dark: #e55a3a;
+      --secondary-light: #ffb199;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8f9fa;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .auth-wrapper {
+      width: 100%;
+      max-width: 420px;
+      padding: 15px;
+    }
+    
+    .auth-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .auth-logo img {
+      width: 50px;
+      height: 50px;
+    }
+    
+    .auth-logo h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.8rem;
+      margin-left: 0.5rem;
+      margin-bottom: 0;
+      color: var(--primary);
+    }
+    
+    .card {
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+    }
+    
+    .card-header {
+      background-color: white;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      padding: 1.25rem;
+    }
+    
+    .card-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-size: 1.5rem;
+      margin-bottom: 0;
+      color: #212529;
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+    }
+    
+    .form-control {
+      height: calc(2.5rem + 2px);
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      transition: all 0.2s;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 0.2rem rgba(0, 105, 217, 0.25);
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      padding: 0.5rem 1.5rem;
+      font-weight: 500;
+      height: calc(2.5rem + 2px);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      border-color: var(--primary-dark);
+    }
+    
+    .btn-secondary {
+      background-color: #6c757d;
+      border-color: #6c757d;
+      padding: 0.5rem 1.5rem;
+      font-weight: 500;
+      height: calc(2.5rem + 2px);
+    }
+    
+    .btn-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .btn-link:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+    }
+    
+    .alert {
+      border: none;
+      border-radius: 0.25rem;
+    }
+    
+    .input-group-text {
+      background-color: #e9ecef;
+      border: 1px solid #ced4da;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="auth-logo">
+      <i class="fas fa-cookie-bite fa-2x text-primary"></i>
+      <h1>SweetBites</h1>
+    </div>
+    
+    <div class="card">
+      <div class="card-header">
+        <h2 class="text-center">Login</h2>
+      </div>
+      <div class="card-body">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        
+        <!-- Login Form -->
+        <form method="POST" action="{{ url_for('login') }}">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-envelope"></i>
+              </span>
+              <input 
+                type="email" 
+                class="form-control" 
+                id="email" 
+                name="email" 
+                placeholder="you@example.com" 
+                required
+              >
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <label for="password" class="form-label">Password</label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-lock"></i>
+              </span>
+              <input 
+                type="password" 
+                class="form-control" 
+                id="password" 
+                name="password" 
+                placeholder="Your password" 
+                required
+              >
+              <button class="btn btn-outline-secondary" type="button" id="show-password">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-sign-in-alt me-2"></i>Login
+            </button>
+            <a href="{{ url_for('home') }}" class="btn btn-secondary">
+              <i class="fas fa-home me-2"></i>Back to Store
+            </a>
+          </div>
+        </form>
+        
+        <div class="text-center mt-4">
+          <p class="mb-1">Don't have an account?</p>
+          <a href="{{ url_for('register') }}" class="btn btn-link">Create Account</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="text-center mt-4">
+      <p class="text-muted">&copy; {{ now.year if now else 2025 }} SweetBites. All rights reserved.</p>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const showPasswordButton = document.getElementById('show-password');
+      const passwordInput = document.getElementById('password');
+      
+      showPasswordButton.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        const icon = this.querySelector('i');
+        if (type === 'password') {
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+        } else {
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
