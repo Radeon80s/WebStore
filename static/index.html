@@ -379,7 +379,7 @@
             >
               <div class="relative overflow-hidden">
                 <img 
-                  :src="product.image" 
+                  :src="product.img" 
                   :alt="product.name" 
                   class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
                   @click="showProductDetails(product)"
@@ -594,7 +594,7 @@
                   {{ product.category }}
                 </span>
                 <img 
-                  :src="product.image" 
+                  :src="product.img" 
                   class="card-img-top w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105" 
                   :alt="product.name"
                   @click="showProductDetails(product)"
@@ -681,7 +681,7 @@
                   {{ product.category }}
                 </span>
                 <img 
-                  :src="product.image" 
+                  :src="product.img" 
                   class="card-img-top w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105" 
                   :alt="product.name"
                   @click="showProductDetails(product)"
@@ -1492,7 +1492,7 @@
         // Helper method to get product image from ID
         const getProductImage = (productId) => {
           const product = products.value.find(p => p.id === productId);
-          return product ? product.image : '';
+          return product ? product.img : '';
         };
         
         // Helper method to get product by ID
