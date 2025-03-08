@@ -20,6 +20,89 @@ def init_db(app):
 
     with app.app_context():
         db.create_all()
+        if not Product.query.first():
+                    products = [
+                         {
+                             'name': 'Premium Dark Chocolate Bar',
+                             'price': 5.99,
+                             'image': 'https://images.pexels.com/photos/65882/chocolate-dark-coffee-confiserie-65882.jpeg',
+                             'category': 'Chocolate',
+                             'description': 'Indulge in the rich, velvety smoothness of our premium dark chocolate bar. Made with the finest cocoa beans, this bar is perfect for chocolate lovers who appreciate a deep, intense flavor.'
+                         },
+                         {
+                             'name': 'White Chocolate Delight',
+                             'price': 4.99,
+                             'image': 'https://images.pexels.com/photos/4791257/pexels-photo-4791257.jpeg',
+                             'category': 'Chocolate',
+                             'description': 'Experience the sweet, delicate flavor of our white chocolate bar. Made with high-quality ingredients, it\'s the perfect treat for those who prefer a lighter, more vanilla-forward chocolate taste.'
+                         },
+                         {
+                             'name': 'Chocolate Chip Cookies (pack of 3)',
+                             'price': 9.99,
+                             'image': 'https://images.pexels.com/photos/230325/pexels-photo-230325.jpeg',
+                             'category': 'Cookies',
+                             'description': 'These classic chocolate chip cookies are baked to golden perfection, featuring chunks of semi-sweet chocolate in a soft, buttery dough. A timeless favorite for any occasion.'
+                         },
+                         {
+                             'name': 'Chocolate Lava Cake',
+                             'price': 19.99,
+                             'image': 'https://images.pexels.com/photos/14309255/pexels-photo-14309255.jpeg',
+                             'category': 'Cakes',
+                             'description': 'Indulge in the decadence of our chocolate lava cake, with its rich chocolate exterior and a molten chocolate center that oozes out when you cut into it.'
+                         },
+                         {
+                             'name': 'New York Style Cheesecake',
+                             'price': 29.99,
+                             'image': 'https://images.pexels.com/photos/3185509/pexels-photo-3185509.png',
+                             'category': 'Cakes',
+                             'description': 'Our creamy and smooth cheesecake is a timeless classic, made with a graham cracker crust and topped with your choice of fruit or chocolate sauce. It\'s the perfect balance of tangy and sweet.'
+                         },
+                         {
+                             'name': 'Strawberry Lattice Pie',
+                             'price': 24.99,
+                             'image': 'https://images.pexels.com/photos/31020416/pexels-photo-31020416.jpeg',
+                             'category': 'Cakes',
+                             'description': 'Delight in the fresh, summery taste of our strawberry lattice pie. Made with a flaky pastry crust and filled with juicy strawberries, it\'s a light and refreshing dessert.'
+                         },
+                         {
+                             'name': 'Fudge Brownies (pack of 4)',
+                             'price': 14.99,
+                             'image': 'https://images.pexels.com/photos/2067396/pexels-photo-2067396.jpeg',
+                             'category': 'Cakes',
+                             'description': 'Our fudgy brownies are rich, chocolatey, and perfectly moist. Each bite is an indulgence in chocolate heaven.'
+                         },
+                         {
+                             'name': 'Nutella and Strawberry Croissant',
+                             'price': 5.99,
+                             'image': 'https://images.pexels.com/photos/27411773/pexels-photo-27411773.jpeg',
+                             'category': 'Pastries',
+                             'description': 'Start your day with our flaky and buttery croissant, filled with Nutella and topped with fresh strawberries. It\'s a delightful treat for breakfast or a mid-day snack.'
+                         },
+                         {
+                             'name': 'Sour Patch Kids (bag)',
+                             'price': 2.99,
+                             'image': 'https://images.pexels.com/photos/7110191/pexels-photo-7110191.jpeg',
+                             'category': 'Candy',
+                             'description': 'These tangy and sweet Sour Patch Kids are a favorite among candy lovers. They start sour and end sweet, providing a fun and flavorful experience.'
+                         },
+                         {
+                             'name': 'Vanilla Ice Cream Cone',
+                             'price': 3.99,
+                             'image': 'https://images.pexels.com/photos/1362534/pexels-photo-1362534.jpeg',
+                             'category': 'Other',
+                             'description': 'Enjoy our classic vanilla ice cream in a wafer cone, a timeless favorite that pairs well with any topping or dessert.'
+                         }
+                     ]
+                     
+                     for product_data in products:
+                         product = Product(**product_data)
+                         db.session.add(product)
+                     
+                     db.session.commit()
+                     print("Products added successfully!")
+                 else:
+                     print("Database is not empty. No products added.")
+
 
 def add_missing_columns(app):
     with app.app_context():
