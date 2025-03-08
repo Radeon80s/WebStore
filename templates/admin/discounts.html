@@ -10,293 +10,309 @@
 {% endblock %}
 
 {% block content %}
-<div class="stats-row">
-  <div class="stat-card primary">
-    <div class="icon">
-      <i class="fas fa-tags"></i>
+<div class="container-fluid px-0">
+  <!-- Stats Cards -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body d-flex align-items-center">
+          <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+            <i class="fas fa-tags text-primary fa-lg"></i>
+          </div>
+          <div>
+            <h6 class="text-muted mb-1">TOTAL CODES</h6>
+            <h2 class="mb-0 fw-bold">{{ discounts|length }}</h2>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="content">
-      <p class="title">Total Codes</p>
-      <h3 class="value">{{ discounts|length }}</h3>
+    
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body d-flex align-items-center">
+          <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+            <i class="fas fa-check-circle text-success fa-lg"></i>
+          </div>
+          <div>
+            <h6 class="text-muted mb-1">ACTIVE CODES</h6>
+            <h2 class="mb-0 fw-bold">{{ discounts|selectattr('active', 'equalto', true)|selectattr('is_valid')|list|length }}</h2>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-  
-  <div class="stat-card success">
-    <div class="icon">
-      <i class="fas fa-check-circle"></i>
+    
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body d-flex align-items-center">
+          <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+            <i class="fas fa-clock text-warning fa-lg"></i>
+          </div>
+          <div>
+            <h6 class="text-muted mb-1">EXPIRING SOON</h6>
+            <h2 class="mb-0 fw-bold">{{ discounts|selectattr('active', 'equalto', true)|selectattr('expires_at', 'ne', none)|selectattr('expires_at', 'ge', now)|selectattr('expires_at', 'le', now + timedelta(days=7))|list|length }}</h2>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="content">
-      <p class="title">Active Codes</p>
-      <h3 class="value">{{ discounts|selectattr('active', 'equalto', true)|selectattr('is_valid')|list|length }}</h3>
-    </div>
-  </div>
-  
-  <div class="stat-card warning">
-    <div class="icon">
-      <i class="fas fa-clock"></i>
-    </div>
-    <div class="content">
-      <p class="title">Expiring Soon</p>
-  <h3 class="value">{{ discounts|selectattr('active', 'equalto', true)|selectattr('expires_at', 'ne', none)|selectattr('expires_at', 'ge', now)|selectattr('expires_at', 'le', now + timedelta(days=7))|list|length }}</h3>    </div>
   </div>
 
-<div class="card">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <div>
-      <i class="fas fa-tag"></i> Discount Code List
+  <!-- Discount List -->
+  <div class="card mb-4 border-0 shadow-sm">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <i class="fas fa-tag me-2"></i>
+        <h5 class="mb-0">Discount Code List</h5>
+      </div>
+      <div class="d-flex">
+        <div class="input-group me-2">
+          <input type="text" class="form-control" id="searchDiscounts" placeholder="Search discount codes...">
+          <button class="btn btn-outline-secondary" type="button" id="searchBtn">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="statusFilterBtn" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-filter me-1"></i> Filter
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="statusFilterBtn">
+            <li><a class="dropdown-item filter-item" href="#" data-status="all">All Status</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item filter-item" href="#" data-status="active">Active</a></li>
+            <li><a class="dropdown-item filter-item" href="#" data-status="inactive">Inactive</a></li>
+            <li><a class="dropdown-item filter-item" href="#" data-status="expired">Expired</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
-    <div class="d-flex align-items-center">
-      <div class="input-group input-group-sm me-2" style="width: 250px;">
-        <input type="text" class="form-control" id="searchDiscounts" placeholder="Search discount codes...">
-        <button class="btn btn-outline-secondary" type="button" id="searchBtn">
-          <i class="fas fa-search"></i>
-        </button>
-      </div>
-      <div class="dropdown">
-        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="statusFilterBtn" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="fas fa-filter me-1"></i> Filter
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="statusFilterBtn">
-          <li><a class="dropdown-item filter-item" href="#" data-status="all">All Status</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item filter-item" href="#" data-status="active">Active</a></li>
-          <li><a class="dropdown-item filter-item" href="#" data-status="inactive">Inactive</a></li>
-          <li><a class="dropdown-item filter-item" href="#" data-status="expired">Expired</a></li>
-        </ul>
-      </div>
+    
+    <div class="card-body p-0">
+      {% if discounts %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0" id="discountsTable">
+            <thead class="table-light">
+              <tr>
+                <th>Code</th>
+                <th>Type/Amount</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Expires</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for discount in discounts %}
+              <tr data-status="{{ 'active' if discount.active and discount.is_valid() else 'expired' if discount.expires_at and discount.expires_at < now else 'inactive' }}">
+                <td>
+                  <strong class="fs-5">{{ discount.code }}</strong>
+                </td>
+                <td>
+                  {% if discount.type == 'percent' %}
+                    <span class="badge bg-info mb-1 d-block">Percentage</span>
+                    <span class="fw-bold">{{ "%.1f"|format(discount.amount) }}%</span>
+                  {% else %}
+                    <span class="badge bg-primary mb-1 d-block">Flat Amount</span>
+                    <span class="fw-bold">${{ "%.2f"|format(discount.amount) }}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if discount.active and (not discount.expires_at or discount.expires_at > now) %}
+                    <span class="badge bg-success">Active</span>
+                  {% elif discount.expires_at and discount.expires_at < now %}
+                    <span class="badge bg-danger">Expired</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Inactive</span>
+                  {% endif %}
+                </td>
+                <td>{{ discount.created_at.strftime('%Y-%m-%d') }}</td>
+                <td>
+                  {% if discount.expires_at %}
+                    <span class="{% if discount.expires_at < now %}text-danger{% elif (discount.expires_at - now).days < 7 %}text-warning{% endif %}">
+                      {{ discount.expires_at.strftime('%Y-%m-%d') }}
+                      {% if discount.expires_at > now and (discount.expires_at - now).days < 7 %}
+                        <small class="d-block text-warning">in {{ (discount.expires_at - now).days }} days</small>
+                      {% endif %}
+                    </span>
+                  {% else %}
+                    <span class="text-muted">Never</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="d-flex justify-content-center gap-1">
+                    <form action="{{ url_for('admin_toggle_discount', discount_id=discount.id) }}" method="POST">
+                      <button type="submit" class="btn btn-sm {% if discount.active %}btn-warning{% else %}btn-success{% endif %}" title="{{ 'Deactivate' if discount.active else 'Activate' }}">
+                        <i class="fas {% if discount.active %}fa-ban{% else %}fa-check{% endif %}"></i>
+                      </button>
+                    </form>
+                    <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#viewDiscountModal" 
+                            data-id="{{ discount.id }}" 
+                            data-code="{{ discount.code }}" 
+                            data-type="{{ discount.type }}" 
+                            data-amount="{{ discount.amount }}"
+                            data-active="{{ discount.active }}"
+                            data-created="{{ discount.created_at.strftime('%Y-%m-%d') }}"
+                            data-expires="{{ discount.expires_at.strftime('%Y-%m-%d') if discount.expires_at else 'Never' }}">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteDiscountModal"
+                            data-id="{{ discount.id }}" data-code="{{ discount.code }}">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="p-5 text-center">
+          <i class="fas fa-tag fa-3x mb-3 text-muted"></i>
+          <h5>No Discount Codes Found</h5>
+          <p class="text-muted mb-3">Add your first discount code to get started.</p>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDiscountModal">
+            <i class="fas fa-plus me-1"></i> Add New Discount
+          </button>
+        </div>
+      {% endif %}
     </div>
   </div>
-  <div class="card-body p-0">
-    {% if discounts %}
-    <div class="table-responsive">
-      <table class="table table-hover" id="discountsTable">
-        <thead>
-          <tr>
-            <th>Code</th>
-            <th>Type</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Created</th>
-            <th>Expires</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for discount in discounts %}
-          <tr data-status="{{ 'active' if discount.active and discount.is_valid() else 'expired' if discount.expires_at and discount.expires_at < now else 'inactive' }}">
-            <td><strong>{{ discount.code }}</strong></td>
-            <td>
-              {% if discount.type == 'percent' %}
-              <span class="badge bg-info">Percentage</span>
-              {% else %}
-              <span class="badge bg-primary">Flat Amount</span>
-              {% endif %}
-            </td>
-            <td>
-              {% if discount.type == 'percent' %}
-              <span class="fw-bold">{{ discount.amount }}%</span>
-              {% else %}
-              <span class="fw-bold">${{ "%.2f"|format(discount.amount) }}</span>
-              {% endif %}
-            </td>
-            <td>
-              {% if discount.active and (not discount.expires_at or discount.expires_at > now) %}
-              <span class="badge bg-success">Active</span>
-              {% elif discount.expires_at and discount.expires_at < now %}
-              <span class="badge bg-danger">Expired</span>
-              {% else %}
-              <span class="badge bg-secondary">Inactive</span>
-              {% endif %}
-            </td>
-            <td>{{ discount.created_at.strftime('%Y-%m-%d') }}</td>
-            <td>
-              {% if discount.expires_at %}
-              <span class="{% if discount.expires_at < now %}text-danger{% elif (discount.expires_at - now).days < 7 %}text-warning{% endif %}">
-                {{ discount.expires_at.strftime('%Y-%m-%d') }}
-                {% if discount.expires_at > now and (discount.expires_at - now).days < 7 %}
-                <small class="d-block text-warning">Expires in {{ (discount.expires_at - now).days }} days</small>
-                {% endif %}
-              </span>
-              {% else %}
-              <span class="text-muted">Never</span>
-              {% endif %}
-            </td>
-            <td>
-              <div class="action-btn-group">
-                <form action="{{ url_for('admin_toggle_discount', discount_id=discount.id) }}" method="POST" class="d-inline">
-                  <button type="submit" class="btn btn-sm {% if discount.active %}btn-warning{% else %}btn-success{% endif %}" title="{{ 'Deactivate' if discount.active else 'Activate' }}">
-                    <i class="fas {% if discount.active %}fa-ban{% else %}fa-check{% endif %}"></i>
-                  </button>
-                </form>
-                <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#viewDiscountModal" 
-                        data-id="{{ discount.id }}" 
-                        data-code="{{ discount.code }}" 
-                        data-type="{{ discount.type }}" 
-                        data-amount="{{ discount.amount }}"
-                        data-active="{{ discount.active }}"
-                        data-created="{{ discount.created_at.strftime('%Y-%m-%d') }}"
-                        data-expires="{{ discount.expires_at.strftime('%Y-%m-%d') if discount.expires_at else 'Never' }}">
-                  <i class="fas fa-eye"></i>
-                </button>
-                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteDiscountModal"
-                        data-id="{{ discount.id }}" data-code="{{ discount.code }}">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% else %}
-    <div class="p-5 text-center">
-      <i class="fas fa-tag fa-3x mb-3 text-muted"></i>
-      <h5>No Discount Codes Found</h5>
-      <p class="text-muted mb-3">Add your first discount code to get started.</p>
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDiscountModal">
-        <i class="fas fa-plus me-1"></i> Add New Discount
-      </button>
-    </div>
-    {% endif %}
-  </div>
-</div>
 
-<!-- Add Discount Modal -->
-<div class="modal fade" id="addDiscountModal" tabindex="-1" aria-labelledby="addDiscountModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="addDiscountModalLabel">Add New Discount Code</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form action="{{ url_for('admin_create_discount') }}" method="POST">
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="code" class="form-label">Discount Code *</label>
-            <input type="text" class="form-control" id="code" name="code" maxlength="20" pattern="[A-Za-z0-9]+" required>
-            <div class="form-text">Only letters and numbers. Will be converted to uppercase.</div>
-          </div>
-          
-          <div class="mb-3">
-            <label for="type" class="form-label">Discount Type *</label>
-            <select class="form-select" id="type" name="type" required>
-              <option value="percent">Percentage Discount</option>
-              <option value="flat">Flat Amount Discount</option>
-            </select>
-          </div>
-          
-          <div class="mb-3">
-            <label for="amount" class="form-label">Discount Amount *</label>
-            <div class="input-group">
-              <span class="input-group-text" id="discount-symbol">%</span>
-              <input type="number" class="form-control" id="amount" name="amount" step="0.01" min="0.01" max="100" required>
+  <!-- Add Discount Modal -->
+  <div class="modal fade" id="addDiscountModal" tabindex="-1" aria-labelledby="addDiscountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addDiscountModalLabel">Add New Discount Code</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="{{ url_for('admin_create_discount') }}" method="POST">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="code" class="form-label">Discount Code *</label>
+              <input type="text" class="form-control" id="code" name="code" maxlength="20" pattern="[A-Za-z0-9]+" required>
+              <div class="form-text">Only letters and numbers. Will be converted to uppercase.</div>
             </div>
-            <div class="form-text" id="amount-help">For percentage, enter a value between 1-100 (no % symbol). For flat amount, enter the dollar value.</div>
+            
+            <div class="mb-3">
+              <label for="type" class="form-label">Discount Type *</label>
+              <select class="form-select" id="type" name="type" required>
+                <option value="percent">Percentage Discount</option>
+                <option value="flat">Flat Amount Discount</option>
+              </select>
+            </div>
+            
+            <div class="mb-3">
+              <label for="amount" class="form-label">Discount Amount *</label>
+              <div class="input-group">
+                <span class="input-group-text" id="discount-symbol">%</span>
+                <input type="number" class="form-control" id="amount" name="amount" step="0.01" min="0.01" max="99" required>
+              </div>
+              <div class="form-text" id="amount-help">For percentage, enter a value between 1-99 (no % symbol). For flat amount, enter the dollar value (max $1000).</div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="expires_at" class="form-label">Expiration Date (Optional)</label>
+              <input type="date" class="form-control" id="expires_at" name="expires_at" min="{{ now.strftime('%Y-%m-%d') }}">
+              <div class="form-text">Leave blank if the discount code never expires.</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create Discount</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Discount Modal -->
+  <div class="modal fade" id="viewDiscountModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Discount Code Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center mb-4">
+            <div class="p-3 bg-light d-inline-block rounded">
+              <h2 id="viewCode" class="mb-0" style="font-family: monospace;"></h2>
+            </div>
           </div>
           
-          <div class="mb-3">
-            <label for="expires_at" class="form-label">Expiration Date (Optional)</label>
-            <input type="date" class="form-control" id="expires_at" name="expires_at" min="{{ now.strftime('%Y-%m-%d') }}">
-            <div class="form-text">Leave blank if the discount code never expires.</div>
+          <div class="row mb-4">
+            <div class="col-6">
+              <div class="card bg-light h-100">
+                <div class="card-body text-center py-3">
+                  <h6 class="text-muted mb-2">Type</h6>
+                  <p class="mb-0 fw-bold" id="viewType"></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="card bg-light h-100">
+                <div class="card-body text-center py-3">
+                  <h6 class="text-muted mb-2">Amount</h6>
+                  <p class="mb-0 fw-bold" id="viewAmount"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row mb-4">
+            <div class="col-6">
+              <div class="card bg-light h-100">
+                <div class="card-body text-center py-3">
+                  <h6 class="text-muted mb-2">Status</h6>
+                  <p class="mb-0 fw-bold" id="viewStatus"></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="card bg-light h-100">
+                <div class="card-body text-center py-3">
+                  <h6 class="text-muted mb-2">Expires</h6>
+                  <p class="mb-0 fw-bold" id="viewExpires"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="alert alert-info mb-0">
+            <i class="fas fa-info-circle me-2"></i>
+            <span id="viewInfoMessage"></span>
           </div>
         </div>
         <div class="modal-footer">
+          <form id="viewToggleForm" action="" method="POST" class="me-auto">
+            <button type="submit" class="btn" id="viewToggleBtn"></button>
+          </form>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Discount Modal -->
+  <div class="modal fade" id="deleteDiscountModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-danger">Confirm Delete</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete the discount code "<span id="deleteDiscountCode"></span>"?</p>
+          <p class="text-danger"><strong>This action cannot be undone.</strong></p>
+        </div>
+        <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Create Discount</button>
+          <form id="deleteDiscountForm" action="" method="POST">
+            <button type="submit" class="btn btn-danger">
+              <i class="fas fa-trash me-1"></i> Delete
+            </button>
+          </form>
         </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- View Discount Modal -->
-<div class="modal fade" id="viewDiscountModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Discount Code Details</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="text-center mb-4">
-          <div class="p-3 bg-light d-inline-block rounded">
-            <h2 id="viewCode" class="mb-0" style="font-family: monospace;"></h2>
-          </div>
-        </div>
-        
-        <div class="row mb-4">
-          <div class="col-6">
-            <div class="card bg-light h-100">
-              <div class="card-body text-center py-3">
-                <h6 class="text-muted mb-2">Type</h6>
-                <p class="mb-0 fw-bold" id="viewType"></p>
-              </div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="card bg-light h-100">
-              <div class="card-body text-center py-3">
-                <h6 class="text-muted mb-2">Amount</h6>
-                <p class="mb-0 fw-bold" id="viewAmount"></p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="row mb-4">
-          <div class="col-6">
-            <div class="card bg-light h-100">
-              <div class="card-body text-center py-3">
-                <h6 class="text-muted mb-2">Status</h6>
-                <p class="mb-0 fw-bold" id="viewStatus"></p>
-              </div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="card bg-light h-100">
-              <div class="card-body text-center py-3">
-                <h6 class="text-muted mb-2">Expires</h6>
-                <p class="mb-0 fw-bold" id="viewExpires"></p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="alert alert-info mb-0">
-          <i class="fas fa-info-circle me-2"></i>
-          <span id="viewInfoMessage"></span>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <form id="viewToggleForm" action="" method="POST" class="me-auto">
-          <button type="submit" class="btn" id="viewToggleBtn"></button>
-        </form>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Delete Discount Modal -->
-<div class="modal fade" id="deleteDiscountModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title text-danger">Confirm Delete</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to delete the discount code "<span id="deleteDiscountCode"></span>"?</p>
-        <p class="text-danger"><strong>This action cannot be undone.</strong></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <form id="deleteDiscountForm" action="" method="POST">
-          <button type="submit" class="btn btn-danger">
-            <i class="fas fa-trash me-1"></i> Delete
-          </button>
-        </form>
       </div>
     </div>
   </div>
@@ -315,20 +331,49 @@
     function updateAmountField() {
       if (typeSelect.value === 'percent') {
         discountSymbol.textContent = '%';
-        amountInput.max = '100';
+        amountInput.max = '99';
         amountInput.min = '1';
-        amountHelp.textContent = 'For percentage, enter a value between 1-100 (no % symbol).';
+        amountHelp.textContent = 'For percentage, enter a value between 1-99 (no % symbol).';
       } else {
         discountSymbol.textContent = '$';
         amountInput.min = '0.01';
-        amountInput.removeAttribute('max');
-        amountHelp.textContent = 'For flat amount, enter the dollar value.';
+        amountInput.max = '1000';
+        amountHelp.textContent = 'For flat amount, enter the dollar value (max $1000).';
       }
     }
     
     if (typeSelect) {
       updateAmountField();
       typeSelect.addEventListener('change', updateAmountField);
+    }
+    
+    // Form validation before submission
+    const discountForm = document.querySelector('form[action*="create_discount"]');
+    if (discountForm) {
+      discountForm.addEventListener('submit', function(event) {
+        const amountValue = parseFloat(amountInput.value);
+        let isValid = true;
+        let errorMessage = '';
+        
+        // Validate amount based on type
+        if (typeSelect.value === 'percent') {
+          if (amountValue <= 0 || amountValue >= 100) {
+            isValid = false;
+            errorMessage = 'Percentage discount must be between 1% and 99%.';
+          }
+        } else {
+          if (amountValue <= 0 || amountValue > 1000) {
+            isValid = false;
+            errorMessage = 'Flat discount amount must be between $0.01 and $1000.';
+          }
+        }
+        
+        // Prevent form submission if validation fails
+        if (!isValid) {
+          event.preventDefault();
+          alert(errorMessage);
+        }
+      });
     }
     
     // View Discount Modal
@@ -348,7 +393,7 @@
         
         if (type === 'percent') {
           document.getElementById('viewType').textContent = 'Percentage Discount';
-          document.getElementById('viewAmount').textContent = amount + '%';
+          document.getElementById('viewAmount').textContent = parseFloat(amount).toFixed(1) + '%';
         } else {
           document.getElementById('viewType').textContent = 'Flat Amount';
           document.getElementById('viewAmount').textContent = '$' + parseFloat(amount).toFixed(2);
@@ -373,7 +418,7 @@
         // Set info message
         let infoMessage = '';
         if (type === 'percent') {
-          infoMessage = `This code gives ${amount}% off the order subtotal.`;
+          infoMessage = `This code gives ${parseFloat(amount).toFixed(1)}% off the order subtotal.`;
         } else {
           infoMessage = `This code gives $${parseFloat(amount).toFixed(2)} off the order subtotal.`;
         }
