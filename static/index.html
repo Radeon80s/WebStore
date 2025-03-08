@@ -639,13 +639,13 @@
               <small class="text-muted d-block">{{ formatDate(order.created_at) }}</small>
             </div>
             <div>
-              <span class="badge" :class="{
-                'bg-warning text-dark': order.status === 'pending',
-                'bg-primary': order.status === 'processing',
-                'bg-info': order.status === 'shipped',
-                'bg-success': order.status === 'delivered',
-                'bg-danger': order.status === 'cancelled'
-              }">{{ order.status | capitalize }}</span>
+                <span class="badge" :class="{
+                  'bg-warning text-dark': order.status === 'pending',
+                  'bg-primary': order.status === 'processing',
+                  'bg-info': order.status === 'shipped',
+                  'bg-success': order.status === 'delivered',
+                  'bg-danger': order.status === 'cancelled'
+                }">{{ capitalize(order.status) }}</span>
               <span class="ms-2 fw-bold">${{ order.total.toFixed(2) }}</span>
             </div>
           </div>
