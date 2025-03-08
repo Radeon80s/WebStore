@@ -8,7 +8,7 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Add Lucide Icons -->
+  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   
   <!-- Google Fonts -->
@@ -22,19 +22,27 @@
   <!-- Vue 3 Production Build -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   
+  <!-- Tailwind Custom Config -->
   <script>
-    // Configure Tailwind
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
             'sans': ['Poppins', 'sans-serif'],
-            'serif': ['Playfair Display', 'serif']
+            'serif': ['Playfair Display', 'serif'],
           },
           borderRadius: {
             'xl': '1rem',
             '2xl': '1.5rem',
             '3xl': '2rem',
+          },
+          boxShadow: {
+            'soft': '0 4px 10px rgba(0,0,0,0.03)',
+            'md-soft': '0 8px 20px rgba(0,0,0,0.06)'
+          },
+          colors: {
+            'primary': '#F43F5E', // rose-500 as 'primary'
+            'primary-hover': '#E11D48', // rose-600
           }
         }
       }
@@ -42,14 +50,7 @@
   </script>
   
   <style>
-    /* Base Styles */
-    body {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    /* Transitions */
+    /* Smooth transitions for Vue */
     .fade-enter-active,
     .fade-leave-active {
       transition: opacity 0.3s ease;
@@ -58,7 +59,7 @@
     .fade-leave-to {
       opacity: 0;
     }
-    
+
     .slide-up-enter-active,
     .slide-up-leave-active {
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -68,7 +69,7 @@
       opacity: 0;
       transform: translateY(20px);
     }
-    
+
     .slide-right-enter-active,
     .slide-right-leave-active {
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -78,8 +79,8 @@
       opacity: 0;
       transform: translateX(100%);
     }
-    
-    /* Animations */
+
+    /* For the floating shapes (optional) */
     @keyframes float-1 {
       0%, 100% { transform: translate(0, 0) rotate(0); }
       50% { transform: translate(-20px, -20px) rotate(5deg); }
@@ -96,7 +97,6 @@
       0%, 100% { transform: translate(0, 0) rotate(0); }
       50% { transform: translate(15px, 20px) rotate(15deg); }
     }
-    
     .floating-1 {
       animation: float-1 10s infinite ease-in-out;
     }
@@ -115,47 +115,68 @@
   <div id="app">
     <!-- Header with Glass Effect -->
     <header class="sticky top-0 z-50">
-      <nav class="backdrop-blur-md bg-white/80 shadow-sm border-b border-pink-100">
+      <nav class="backdrop-blur-md bg-white/80 shadow-soft border-b border-pink-100">
         <div class="container mx-auto px-4">
           <div class="flex items-center justify-between h-16">
             <!-- Logo -->
             <div
               @click="activeSection = 'home'"
-              class="font-serif text-2xl font-bold text-rose-500 cursor-pointer"
+              class="font-serif text-2xl font-bold text-primary cursor-pointer select-none"
             >
               SweetBites
             </div>
             
             <!-- Desktop Navigation -->
-            <div class="hidden md:flex space-x-8 items-center">
+            <div class="hidden md:flex space-x-8 items-center font-medium">
               <button
                 @click="activeSection = 'home'"
-                class="px-3 py-2 relative transition-colors"
-                :class="{'text-rose-500 font-medium': activeSection === 'home', 'hover:text-rose-500': activeSection !== 'home'}"
+                class="relative px-3 py-2 transition-colors"
+                :class="{
+                  'text-primary': activeSection === 'home',
+                  'hover:text-primary': activeSection !== 'home'
+                }"
               >
                 Home
-                <div v-if="activeSection === 'home'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-rose-500"></div>
+                <div
+                  v-if="activeSection === 'home'"
+                  class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
+                ></div>
               </button>
               
               <button
                 @click="activeSection = 'products'"
-                class="px-3 py-2 relative transition-colors"
-                :class="{'text-rose-500 font-medium': activeSection === 'products', 'hover:text-rose-500': activeSection !== 'products'}"
+                class="relative px-3 py-2 transition-colors"
+                :class="{
+                  'text-primary': activeSection === 'products',
+                  'hover:text-primary': activeSection !== 'products'
+                }"
               >
                 Products
-                <div v-if="activeSection === 'products'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-rose-500"></div>
+                <div
+                  v-if="activeSection === 'products'"
+                  class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
+                ></div>
               </button>
               
               <button
                 @click="activeSection = 'wishlist'"
-                class="px-3 py-2 relative transition-colors"
-                :class="{'text-rose-500 font-medium': activeSection === 'wishlist', 'hover:text-rose-500': activeSection !== 'wishlist'}"
+                class="relative px-3 py-2 transition-colors"
+                :class="{
+                  'text-primary': activeSection === 'wishlist',
+                  'hover:text-primary': activeSection !== 'wishlist'
+                }"
               >
                 Wishlist
-                <span v-if="wishlist.length > 0" class="ml-1 px-1.5 py-0.5 text-xs bg-rose-500 text-white rounded-full">
+                <span
+                  v-if="wishlist.length > 0"
+                  class="ml-1 px-1.5 py-0.5 text-xs bg-primary text-white rounded-full"
+                >
                   {{ wishlist.length }}
                 </span>
-                <div v-if="activeSection === 'wishlist'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-rose-500"></div>
+                <div
+                  v-if="activeSection === 'wishlist'"
+                  class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
+                ></div>
               </button>
               
               <button
@@ -163,7 +184,10 @@
                 class="relative p-2 rounded-full hover:bg-pink-100 transition-colors"
               >
                 <i data-lucide="shopping-cart" class="h-5 w-5"></i>
-                <span v-if="cartItemCount > 0" class="absolute -top-1 -right-1 px-1.5 py-0.5 text-xs bg-rose-500 text-white rounded-full">
+                <span
+                  v-if="cartItemCount > 0"
+                  class="absolute -top-1 -right-1 px-1.5 py-0.5 text-xs bg-primary text-white rounded-full"
+                >
                   {{ cartItemCount }}
                 </span>
               </button>
@@ -171,35 +195,60 @@
               <button
                 v-if="user.logged_in"
                 @click="activeSection = 'orders'"
-                class="px-3 py-2 relative transition-colors"
-                :class="{'text-rose-500 font-medium': activeSection === 'orders', 'hover:text-rose-500': activeSection !== 'orders'}"
+                class="relative px-3 py-2 transition-colors"
+                :class="{
+                  'text-primary': activeSection === 'orders',
+                  'hover:text-primary': activeSection !== 'orders'
+                }"
               >
                 My Orders
-                <div v-if="activeSection === 'orders'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-rose-500"></div>
+                <div
+                  v-if="activeSection === 'orders'"
+                  class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
+                ></div>
               </button>
               
               <a
                 v-if="user.logged_in && user.is_admin"
                 href="/admin"
-                class="px-3 py-2 relative transition-colors hover:text-rose-500"
+                class="hover:text-primary transition-colors"
               >
                 Admin
               </a>
               
-              <a v-if="!user.logged_in" href="/login" class="p-2 rounded-full hover:bg-pink-100 transition-colors">
+              <a
+                v-if="!user.logged_in"
+                href="/login"
+                class="p-2 rounded-full hover:bg-pink-100 transition-colors"
+              >
                 <i data-lucide="user" class="h-5 w-5"></i>
               </a>
               
-              <a v-if="user.logged_in" href="/logout" class="p-2 rounded-full hover:bg-pink-100 transition-colors">
+              <a
+                v-if="user.logged_in"
+                href="/logout"
+                class="p-2 rounded-full hover:bg-pink-100 transition-colors"
+              >
                 <i data-lucide="log-out" class="h-5 w-5"></i>
               </a>
             </div>
             
             <!-- Mobile Menu Button -->
             <div class="md:hidden">
-              <button @click="menuOpen = !menuOpen" class="p-2 rounded-md hover:bg-pink-100 transition-colors">
-                <i v-if="!menuOpen" data-lucide="menu" class="h-6 w-6"></i>
-                <i v-else data-lucide="x" class="h-6 w-6"></i>
+              <button
+                @click="menuOpen = !menuOpen"
+                class="p-2 rounded-md hover:bg-pink-100 transition-colors"
+              >
+                <i
+                  v-if="!menuOpen"
+                  data-lucide="menu"
+                  class="h-6 w-6"
+                ></i>
+                <i
+                  v-else
+                  data-lucide="x"
+                  class="h-6 w-6"
+                ></i>
               </button>
             </div>
           </div>
@@ -208,12 +257,18 @@
       
       <!-- Mobile Navigation Menu -->
       <transition name="fade">
-        <div v-if="menuOpen" class="md:hidden bg-white border-b border-pink-100 shadow-md">
-          <div class="container mx-auto px-4 py-3 space-y-2">
+        <div
+          v-if="menuOpen"
+          class="md:hidden bg-white border-b border-pink-100 shadow-md"
+        >
+          <div class="container mx-auto px-4 py-3 space-y-2 font-medium">
             <button
               @click="activeSection = 'home'; menuOpen = false"
               class="block w-full text-left px-3 py-2 rounded-md transition-colors"
-              :class="{'bg-pink-100 text-rose-500 font-medium': activeSection === 'home', 'hover:bg-gray-100': activeSection !== 'home'}"
+              :class="{
+                'bg-pink-100 text-primary': activeSection === 'home',
+                'hover:bg-gray-100': activeSection !== 'home'
+              }"
             >
               Home
             </button>
@@ -221,7 +276,10 @@
             <button
               @click="activeSection = 'products'; menuOpen = false"
               class="block w-full text-left px-3 py-2 rounded-md transition-colors"
-              :class="{'bg-pink-100 text-rose-500 font-medium': activeSection === 'products', 'hover:bg-gray-100': activeSection !== 'products'}"
+              :class="{
+                'bg-pink-100 text-primary': activeSection === 'products',
+                'hover:bg-gray-100': activeSection !== 'products'
+              }"
             >
               Products
             </button>
@@ -229,10 +287,16 @@
             <button
               @click="activeSection = 'wishlist'; menuOpen = false"
               class="block w-full text-left px-3 py-2 rounded-md transition-colors"
-              :class="{'bg-pink-100 text-rose-500 font-medium': activeSection === 'wishlist', 'hover:bg-gray-100': activeSection !== 'wishlist'}"
+              :class="{
+                'bg-pink-100 text-primary': activeSection === 'wishlist',
+                'hover:bg-gray-100': activeSection !== 'wishlist'
+              }"
             >
               Wishlist
-              <span v-if="wishlist.length > 0" class="ml-2 px-1.5 py-0.5 text-xs bg-rose-500 text-white rounded-full">
+              <span
+                v-if="wishlist.length > 0"
+                class="ml-2 px-1.5 py-0.5 text-xs bg-primary text-white rounded-full"
+              >
                 {{ wishlist.length }}
               </span>
             </button>
@@ -242,7 +306,10 @@
               class="block w-full text-left px-3 py-2 rounded-md transition-colors hover:bg-gray-100"
             >
               Cart
-              <span v-if="cartItemCount > 0" class="ml-2 px-1.5 py-0.5 text-xs bg-rose-500 text-white rounded-full">
+              <span
+                v-if="cartItemCount > 0"
+                class="ml-2 px-1.5 py-0.5 text-xs bg-primary text-white rounded-full"
+              >
                 {{ cartItemCount }}
               </span>
             </button>
@@ -251,7 +318,10 @@
               v-if="user.logged_in"
               @click="activeSection = 'orders'; menuOpen = false"
               class="block w-full text-left px-3 py-2 rounded-md transition-colors"
-              :class="{'bg-pink-100 text-rose-500 font-medium': activeSection === 'orders', 'hover:bg-gray-100': activeSection !== 'orders'}"
+              :class="{
+                'bg-pink-100 text-primary': activeSection === 'orders',
+                'hover:bg-gray-100': activeSection !== 'orders'
+              }"
             >
               My Orders
             </button>
@@ -299,7 +369,7 @@
           v-for="toast in toasts"
           :key="toast.id"
           :class="[
-            'rounded-2xl shadow-lg p-4 pr-10 text-white relative',
+            'rounded-2xl shadow-md-soft p-4 pr-10 text-white relative min-w-[200px]',
             toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'
           ]"
         >
@@ -316,10 +386,10 @@
 
     <!-- Main Content -->
     <main>
-      <!-- Home Section -->
+      <!-- HOME SECTION -->
       <section v-if="activeSection === 'home'">
-        <!-- Hero Section with 3D-like Parallax Effect -->
-        <div class="relative overflow-hidden bg-gradient-to-r from-rose-100 to-pink-200 pb-10">
+        <!-- Hero Section -->
+        <div class="relative overflow-hidden bg-gradient-to-r from-rose-100 to-pink-200 pb-10 shadow-sm">
           <div class="container mx-auto px-4 pt-20 pb-24 relative z-10">
             <div class="text-center max-w-2xl mx-auto">
               <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-gray-800 mb-6">
@@ -330,7 +400,8 @@
               </p>
               <button
                 @click="activeSection = 'products'"
-                class="px-8 py-3 bg-rose-500 text-white rounded-full font-medium shadow-lg hover:bg-rose-600 transition-transform hover:scale-105 active:scale-95"
+                class="px-8 py-3 bg-primary text-white rounded-full font-medium shadow-md-soft
+                       hover:bg-primary-hover hover:scale-105 active:scale-95 transition-transform"
               >
                 <i data-lucide="shopping-basket" class="h-5 w-5 inline mr-2"></i>
                 Shop Now
@@ -338,7 +409,7 @@
             </div>
           </div>
           
-          <!-- Floating Decorative Elements -->
+          <!-- Floating Decorative Elements (optional) -->
           <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
             <div class="absolute top-[15%] left-[10%]">
               <div class="w-16 h-16 md:w-24 md:h-24 bg-white/20 backdrop-blur-md rounded-xl transform rotate-12 floating-1"></div>
@@ -355,57 +426,60 @@
           </div>
         </div>
 
-        <!-- Featured Products Section -->
+        <!-- Featured Products -->
         <div class="py-16 container mx-auto px-4">
           <div class="text-center mb-12">
             <h2 class="text-3xl font-serif font-bold">Our Best Sellers</h2>
-            <div class="w-16 h-1 bg-rose-400 mx-auto mt-4"></div>
+            <div class="w-16 h-1 bg-primary mx-auto mt-4"></div>
           </div>
           
           <div class="grid md:grid-cols-3 gap-8">
             <div
               v-for="product in featuredProducts"
               :key="product.id"
-              class="bg-white rounded-2xl shadow-md overflow-hidden group hover:-translate-y-2 transition-all duration-300"
+              class="bg-white rounded-2xl shadow-md-soft overflow-hidden group hover:-translate-y-2 transition-all duration-300"
             >
               <div class="relative overflow-hidden">
                 <img
                   :src="product.img"
                   :alt="product.name"
-                  class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
+                  class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105 cursor-pointer"
                   @click="showProductDetails(product)"
-                  style="cursor: pointer"
                 />
                 <button
                   @click.stop="toggleWishlist(product.id)"
-                  class="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-pink-50 transition-colors z-10"
+                  class="absolute top-3 right-3 p-2 bg-white rounded-full shadow hover:bg-pink-50 transition-colors z-10"
                 >
                   <i
                     data-lucide="heart"
-                    :class="[ isInWishlist(product.id) ? 'fill-rose-500 text-rose-500' : 'text-gray-400' ]"
+                    :class="[ isInWishlist(product.id) ? 'fill-primary text-primary' : 'text-gray-400' ]"
                     class="h-5 w-5"
                   ></i>
                 </button>
                 <div class="absolute top-3 left-3">
-                  <span v-if="product.category" class="px-2 py-1 bg-black/50 text-white text-xs rounded-full">
+                  <span
+                    v-if="product.category"
+                    class="px-2 py-1 bg-black/50 text-white text-xs rounded-full select-none"
+                  >
                     {{ product.category }}
                   </span>
                 </div>
               </div>
-              
-              <div class="p-4">
+              <div class="p-4 flex flex-col">
                 <h3
-                  class="font-medium text-lg cursor-pointer hover:text-rose-500 transition-colors"
+                  class="font-medium text-lg cursor-pointer hover:text-primary transition-colors"
                   @click="showProductDetails(product)"
                 >
                   {{ product.name }}
                 </h3>
-                <p class="text-gray-500 text-sm mt-1 line-clamp-2">{{ product.description }}</p>
+                <p class="text-gray-500 text-sm mt-1 line-clamp-2">
+                  {{ product.description }}
+                </p>
                 <div class="mt-4 flex items-center justify-between">
-                  <span class="text-rose-500 font-semibold">${{ product.price.toFixed(2) }}</span>
+                  <span class="text-primary font-semibold">${{ product.price.toFixed(2) }}</span>
                   <button
                     @click="addToCart(product)"
-                    class="p-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-all hover:scale-105 active:scale-95"
+                    class="px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-all hover:scale-105 active:scale-95"
                   >
                     <i data-lucide="shopping-cart" class="h-5 w-5"></i>
                   </button>
@@ -417,26 +491,40 @@
           <div class="text-center mt-12">
             <button
               @click="activeSection = 'products'"
-              class="px-6 py-2 border-2 border-rose-500 text-rose-500 rounded-full font-medium hover:bg-rose-500 hover:text-white transition-colors hover:scale-105 active:scale-95"
+              class="px-6 py-2 border-2 border-primary text-primary rounded-full font-medium
+                     hover:bg-primary hover:text-white transition-transform hover:scale-105 active:scale-95"
             >
               View All Products
             </button>
           </div>
         </div>
 
-        <!-- Why Choose Us Section -->
+        <!-- Why Choose Us -->
         <div class="py-16 bg-gray-50">
           <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row items-center">
               <div class="md:w-1/2 md:pr-10 mb-10 md:mb-0">
                 <h2 class="text-3xl font-serif font-bold mb-6">Why Choose SweetBites?</h2>
-                
                 <div class="space-y-4">
-                  <div class="flex items-start" v-for="(feature, index) in features" :key="index">
+                  <div
+                    class="flex items-start"
+                    v-for="(feature, index) in features"
+                    :key="index"
+                  >
                     <div class="flex-shrink-0 mt-1">
-                      <div class="w-5 h-5 bg-rose-500 rounded-full flex items-center justify-center">
-                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                      <div class="w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                        <svg
+                          class="w-3 h-3 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="3"
+                            d="M5 13l4 4L19 7"
+                          ></path>
                         </svg>
                       </div>
                     </div>
@@ -449,14 +537,13 @@
               </div>
               
               <div class="md:w-1/2 relative">
-                <div class="relative rounded-2xl overflow-hidden shadow-xl">
+                <div class="relative rounded-2xl overflow-hidden shadow-md-soft">
                   <img
                     src="https://images.pexels.com/photos/1098592/pexels-photo-1098592.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
                     alt="Quality treats"
                     class="w-full h-auto rounded-2xl"
                   />
-                  
-                  <!-- Decorative Elements -->
+                  <!-- Decorative elements -->
                   <div class="absolute -top-4 -left-4 w-24 h-24 bg-rose-200 rounded-full opacity-70"></div>
                   <div class="absolute -bottom-4 -right-4 w-32 h-32 bg-pink-200 rounded-full opacity-70"></div>
                 </div>
@@ -465,25 +552,25 @@
           </div>
         </div>
 
-        <!-- Testimonials Section -->
+        <!-- Testimonials -->
         <div class="py-16 container mx-auto px-4">
           <div class="text-center mb-12">
             <h2 class="text-3xl font-serif font-bold">What Our Customers Say</h2>
-            <div class="w-16 h-1 bg-rose-400 mx-auto mt-4"></div>
+            <div class="w-16 h-1 bg-primary mx-auto mt-4"></div>
           </div>
-          
           <div class="grid md:grid-cols-3 gap-8">
             <div
               v-for="(testimonial, index) in testimonials"
               :key="index"
-              class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:-translate-y-1 transition-transform"
+              class="bg-white p-6 rounded-2xl shadow-md-soft border border-gray-100
+                     hover:-translate-y-1 hover:shadow-md transition-transform"
             >
               <div class="flex text-yellow-400 mb-3">
                 <i
                   v-for="star in 5"
                   :key="star"
                   data-lucide="star"
-                  :class="[ star <= testimonial.rating ? 'fill-current' : '' ]"
+                  :class="[star <= testimonial.rating ? 'fill-current' : '']"
                   class="h-5 w-5"
                 ></i>
               </div>
@@ -494,33 +581,38 @@
         </div>
       </section>
 
-      <!-- Products Section -->
+      <!-- PRODUCTS SECTION -->
       <section v-if="activeSection === 'products'" class="container mx-auto px-4 py-12">
         <div class="text-center mb-6">
           <h2 class="text-3xl font-serif font-bold">Our Products</h2>
-          <div class="w-16 h-1 bg-rose-400 mx-auto mt-4 mb-8"></div>
+          <div class="w-16 h-1 bg-primary mx-auto mt-4 mb-8"></div>
         </div>
         
         <!-- Search Bar -->
         <div class="relative max-w-md mx-auto mb-6">
-          <i data-lucide="search" class="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400 h-5 w-5"></i>
+          <i
+            data-lucide="search"
+            class="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 h-5 w-5"
+          ></i>
           <input
             type="text"
             v-model="searchQuery"
             placeholder="Search products..."
-            class="w-full pl-10 pr-4 py-3 rounded-full border border-gray-200 focus:border-rose-300 focus:ring focus:ring-rose-200 focus:ring-opacity-50"
+            class="w-full pl-10 pr-4 py-3 rounded-full border border-gray-200
+                   focus:border-rose-300 focus:ring focus:ring-rose-200 focus:ring-opacity-50"
           />
         </div>
         
-        <!-- Category Filters -->
-        <div class="flex flex-wrap justify-center gap-2 mb-6">
+        <!-- Category Filters & Sort -->
+        <div class="flex flex-wrap justify-center gap-3 mb-6">
           <button
             @click="currentFilter = 'all'"
-            class="px-4 py-2 rounded-full text-sm font-medium transition-colors hover:scale-105 active:scale-95"
+            class="px-4 py-2 rounded-full text-sm font-medium shadow-sm
+                   transition-transform hover:scale-105 active:scale-95"
             :class="[
-              currentFilter === 'all' 
-                ? 'bg-rose-500 text-white' 
-                : 'bg-white border border-gray-200 hover:border-rose-300'
+              currentFilter === 'all'
+                ? 'bg-primary text-white'
+                : 'bg-white border border-gray-200 hover:border-pink-200'
             ]"
           >
             All Categories
@@ -530,47 +622,51 @@
             v-for="category in categories"
             :key="category"
             @click="currentFilter = category.toLowerCase()"
-            class="px-4 py-2 rounded-full text-sm font-medium transition-colors hover:scale-105 active:scale-95"
+            class="px-4 py-2 rounded-full text-sm font-medium shadow-sm
+                   transition-transform hover:scale-105 active:scale-95"
             :class="[
-              currentFilter === category.toLowerCase() 
-                ? 'bg-rose-500 text-white' 
-                : 'bg-white border border-gray-200 hover:border-rose-300'
+              currentFilter === category.toLowerCase()
+                ? 'bg-primary text-white'
+                : 'bg-white border border-gray-200 hover:border-pink-200'
             ]"
           >
             {{ category }}
           </button>
           
           <!-- Sort Dropdown -->
-          <div class="dropdown relative group ml-2">
+          <div class="relative group">
             <button
-              class="px-4 py-2 rounded-full text-sm font-medium bg-white border border-gray-200 hover:border-rose-300 flex items-center hover:scale-105 active:scale-95"
+              class="px-4 py-2 rounded-full text-sm font-medium bg-white border border-gray-200
+                     hover:border-pink-200 flex items-center hover:scale-105 active:scale-95 shadow-sm"
             >
               <span>Sort By</span>
               <i data-lucide="chevron-down" class="h-4 w-4 ml-1"></i>
             </button>
-            
-            <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 z-20">
+            <div
+              class="absolute right-0 mt-1 w-44 bg-white border border-gray-200 rounded-lg shadow-md-soft
+                     opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all z-10"
+            >
               <button
                 @click="sortOrder = 'price-asc'"
-                class="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-t-lg"
+                class="block w-full text-left px-4 py-2 hover:bg-gray-50 rounded-t-lg"
               >
                 Price: Low to High
               </button>
               <button
                 @click="sortOrder = 'price-desc'"
-                class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                class="block w-full text-left px-4 py-2 hover:bg-gray-50"
               >
                 Price: High to Low
               </button>
               <button
                 @click="sortOrder = 'name-asc'"
-                class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                class="block w-full text-left px-4 py-2 hover:bg-gray-50"
               >
                 Name: A to Z
               </button>
               <button
                 @click="sortOrder = 'name-desc'"
-                class="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-b-lg"
+                class="block w-full text-left px-4 py-2 hover:bg-gray-50 rounded-b-lg"
               >
                 Name: Z to A
               </button>
@@ -579,56 +675,60 @@
         </div>
         
         <!-- Products Grid -->
-        <transition-group name="fade" tag="div" class="grid md:grid-cols-3 gap-4">
+        <transition-group name="fade" tag="div" class="grid md:grid-cols-3 gap-8">
           <div
             v-for="product in filteredProducts"
             :key="product.id"
-            class="col-md-4 col-sm-6 mb-4"
+            class="bg-white rounded-2xl shadow-md-soft overflow-hidden group
+                   hover:-translate-y-2 transition-all duration-300"
           >
-            <div class="product-card card h-100 bg-white rounded-2xl shadow-md overflow-hidden group hover:-translate-y-2 transition-all duration-300">
-              <div class="position-relative overflow-hidden">
-                <span v-if="product.category" class="absolute top-3 left-3 px-2 py-1 bg-black/50 text-white text-xs rounded-full">
-                  {{ product.category }}
-                </span>
-                <img
-                  :src="product.img"
-                  class="card-img-top w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
-                  :alt="product.name"
-                  @click="showProductDetails(product)"
-                  style="cursor: pointer"
-                >
-                <button
-                  class="wishlist-btn absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-pink-50 transition-colors z-10"
-                  :class="{ active: isInWishlist(product.id) }"
-                  @click.stop="toggleWishlist(product.id)"
-                >
-                  <i
-                    data-lucide="heart"
-                    :class="[ isInWishlist(product.id) ? 'fill-rose-500 text-rose-500' : 'text-gray-400' ]"
-                    class="h-5 w-5"
-                  ></i>
-                </button>
-              </div>
-              <div class="p-4 flex flex-col">
-                <h3
-                  class="font-medium text-lg cursor-pointer hover:text-rose-500 transition-colors"
-                  @click="showProductDetails(product)"
-                >
-                  {{ product.name }}
-                </h3>
-                <p v-if="product.description" class="text-gray-500 text-sm mt-1 line-clamp-2">
-                  {{ truncateText(product.description, 60) }}
-                </p>
-                <p class="product-price mt-2 text-rose-500 font-semibold text-lg">
-                  ${{ product.price.toFixed(2) }}
-                </p>
-                <button
-                  @click="addToCart(product)"
-                  class="btn btn-primary mt-auto w-full py-2 mt-4 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-colors flex items-center justify-center"
-                >
-                  <i data-lucide="shopping-cart" class="h-5 w-5 mr-2"></i> Add to Cart
-                </button>
-              </div>
+            <div class="relative overflow-hidden">
+              <span
+                v-if="product.category"
+                class="absolute top-3 left-3 px-2 py-1 bg-black/50 text-white text-xs rounded-full select-none"
+              >
+                {{ product.category }}
+              </span>
+              <img
+                :src="product.img"
+                :alt="product.name"
+                class="w-full h-48 object-cover transition-transform duration-500
+                       group-hover:scale-105 cursor-pointer"
+                @click="showProductDetails(product)"
+              />
+              <button
+                class="absolute top-3 right-3 p-2 bg-white rounded-full shadow hover:bg-pink-50
+                       transition-colors z-10"
+                @click.stop="toggleWishlist(product.id)"
+                :class="{ active: isInWishlist(product.id) }"
+              >
+                <i
+                  data-lucide="heart"
+                  :class="[ isInWishlist(product.id) ? 'fill-primary text-primary' : 'text-gray-400' ]"
+                  class="h-5 w-5"
+                ></i>
+              </button>
+            </div>
+            <div class="p-4 flex flex-col">
+              <h3
+                class="font-medium text-lg cursor-pointer hover:text-primary transition-colors"
+                @click="showProductDetails(product)"
+              >
+                {{ product.name }}
+              </h3>
+              <p v-if="product.description" class="text-gray-500 text-sm mt-1 line-clamp-2">
+                {{ truncateText(product.description, 60) }}
+              </p>
+              <p class="mt-2 text-primary font-semibold text-lg">
+                ${{ product.price.toFixed(2) }}
+              </p>
+              <button
+                @click="addToCart(product)"
+                class="mt-auto w-full py-2 bg-primary text-white rounded-lg
+                       hover:bg-primary-hover transition-colors flex items-center justify-center mt-4"
+              >
+                <i data-lucide="shopping-cart" class="h-5 w-5 mr-2"></i> Add to Cart
+              </button>
             </div>
           </div>
         </transition-group>
@@ -640,113 +740,147 @@
           <p class="text-gray-500 mt-2">Try adjusting your search or filter criteria</p>
           <button
             @click="resetFilters"
-            class="mt-4 px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-colors"
+            class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
           >
             Clear Filters
           </button>
         </div>
       </section>
 
-      <!-- Wishlist Section -->
-      <section v-if="activeSection === 'wishlist'" class="container mx-auto px-4 py-16">
+      <!-- WISHLIST SECTION -->
+      <section
+        v-if="activeSection === 'wishlist'"
+        class="container mx-auto px-4 py-16"
+      >
         <div class="text-center">
           <h2 class="text-3xl font-serif font-bold">My Wishlist</h2>
-          <div class="w-16 h-1 bg-rose-400 mx-auto mt-4 mb-8"></div>
+          <div class="w-16 h-1 bg-primary mx-auto mt-4 mb-8"></div>
         </div>
         
-        <div v-if="!wishlistProducts.length" class="text-center py-16">
+        <div
+          v-if="!wishlistProducts.length"
+          class="text-center py-16"
+        >
           <i data-lucide="heart" class="h-16 w-16 text-gray-300 mx-auto mb-4"></i>
           <h3 class="text-xl font-medium">Your Wishlist is Empty</h3>
-          <p class="text-gray-500 mt-2">Add products to your wishlist to save them for later</p>
+          <p class="text-gray-500 mt-2">
+            Add products to your wishlist to save them for later
+          </p>
           <button
             @click="activeSection = 'products'"
-            class="mt-4 px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-colors"
+            class="mt-4 px-4 py-2 bg-primary text-white rounded-lg
+                   hover:bg-primary-hover transition-colors"
           >
             Browse Products
           </button>
         </div>
         
-        <transition-group v-else name="fade" tag="div" class="grid md:grid-cols-3 gap-4">
+        <transition-group
+          v-else
+          name="fade"
+          tag="div"
+          class="grid md:grid-cols-3 gap-8"
+        >
           <div
             v-for="product in wishlistProducts"
             :key="product.id"
-            class="col-md-4 col-sm-6 mb-4"
+            class="bg-white rounded-2xl shadow-md-soft overflow-hidden group
+                   hover:-translate-y-2 transition-all duration-300"
           >
-            <div class="product-card card h-100 bg-white rounded-2xl shadow-md overflow-hidden group hover:-translate-y-2 transition-all duration-300">
-              <div class="position-relative overflow-hidden">
-                <span v-if="product.category" class="absolute top-3 left-3 px-2 py-1 bg-black/50 text-white text-xs rounded-full">
-                  {{ product.category }}
-                </span>
-                <img
-                  :src="product.img"
-                  class="card-img-top w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
-                  :alt="product.name"
-                  @click="showProductDetails(product)"
-                  style="cursor: pointer"
-                >
+            <div class="relative overflow-hidden">
+              <span
+                v-if="product.category"
+                class="absolute top-3 left-3 px-2 py-1 bg-black/50 text-white text-xs rounded-full select-none"
+              >
+                {{ product.category }}
+              </span>
+              <img
+                :src="product.img"
+                :alt="product.name"
+                class="w-full h-48 object-cover transition-transform duration-500
+                       group-hover:scale-105 cursor-pointer"
+                @click="showProductDetails(product)"
+              />
+              <button
+                class="absolute top-3 right-3 p-2 bg-white rounded-full shadow hover:bg-pink-50
+                       transition-colors z-10 active"
+                @click.stop="toggleWishlist(product.id)"
+              >
+                <i
+                  data-lucide="heart"
+                  class="h-5 w-5 fill-primary text-primary"
+                ></i>
+              </button>
+            </div>
+            <div class="p-4 flex flex-col">
+              <h3
+                class="font-medium text-lg cursor-pointer hover:text-primary transition-colors"
+                @click="showProductDetails(product)"
+              >
+                {{ product.name }}
+              </h3>
+              <p v-if="product.description" class="text-gray-500 text-sm mt-1 line-clamp-2">
+                {{ truncateText(product.description, 60) }}
+              </p>
+              <p class="mt-2 text-primary font-semibold text-lg">
+                ${{ product.price.toFixed(2) }}
+              </p>
+              <div class="mt-4 space-y-2">
                 <button
-                  class="wishlist-btn absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-pink-50 transition-colors z-10 active"
-                  @click.stop="toggleWishlist(product.id)"
+                  @click="addToCart(product)"
+                  class="w-full py-2 bg-primary text-white rounded-lg
+                         hover:bg-primary-hover transition-colors flex items-center justify-center"
                 >
-                  <i data-lucide="heart" class="h-5 w-5 fill-rose-500 text-rose-500"></i>
+                  <i data-lucide="shopping-cart" class="h-5 w-5 mr-2"></i>
+                  Add to Cart
                 </button>
-              </div>
-              <div class="p-4 flex flex-col">
-                <h3
-                  class="font-medium text-lg cursor-pointer hover:text-rose-500 transition-colors"
-                  @click="showProductDetails(product)"
+                <button
+                  @click="toggleWishlist(product.id)"
+                  class="w-full py-2 border border-primary text-primary rounded-lg
+                         hover:bg-rose-50 transition-colors flex items-center justify-center"
                 >
-                  {{ product.name }}
-                </h3>
-                <p v-if="product.description" class="text-gray-500 text-sm mt-1 line-clamp-2">
-                  {{ truncateText(product.description, 60) }}
-                </p>
-                <p class="product-price mt-2 text-rose-500 font-semibold text-lg">
-                  ${{ product.price.toFixed(2) }}
-                </p>
-                <div class="mt-4 space-y-2">
-                  <button
-                    @click="addToCart(product)"
-                    class="btn btn-primary w-full py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-colors flex items-center justify-center"
-                  >
-                    <i data-lucide="shopping-cart" class="h-5 w-5 mr-2"></i> Add to Cart
-                  </button>
-                  <button
-                    @click="toggleWishlist(product.id)"
-                    class="btn btn-outline-danger w-full py-2 border border-rose-500 text-rose-500 rounded-lg hover:bg-rose-50 transition-colors flex items-center justify-center"
-                  >
-                    <i data-lucide="trash" class="h-4 w-4 mr-2"></i> Remove
-                  </button>
-                </div>
+                  <i data-lucide="trash" class="h-4 w-4 mr-2"></i>
+                  Remove
+                </button>
               </div>
             </div>
           </div>
         </transition-group>
       </section>
 
-      <!-- Orders Section -->
+      <!-- ORDERS SECTION -->
       <section v-if="activeSection === 'orders'" class="container mx-auto px-4 py-16">
         <div class="text-center">
           <h2 class="text-3xl font-serif font-bold">My Orders</h2>
-          <div class="w-16 h-1 bg-rose-400 mx-auto mt-4 mb-8"></div>
+          <div class="w-16 h-1 bg-primary mx-auto mt-4 mb-8"></div>
         </div>
         
         <div v-if="!user.logged_in" class="text-center py-16 max-w-md mx-auto">
           <i data-lucide="user" class="h-16 w-16 text-gray-300 mx-auto mb-4"></i>
           <h3 class="text-xl font-medium">Please Login to View Your Orders</h3>
-          <p class="text-gray-500 mt-2 mb-6">You need to be logged in to view your order history.</p>
+          <p class="text-gray-500 mt-2 mb-6">
+            You need to be logged in to view your order history.
+          </p>
           <div class="space-x-3">
-            <a href="/login" class="px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-colors">
+            <a
+              href="/login"
+              class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
+            >
               Login
             </a>
-            <a href="/register" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+            <a
+              href="/register"
+              class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
+            >
               Create Account
             </a>
           </div>
         </div>
         
         <div v-else-if="isLoadingOrders" class="text-center py-16">
-          <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-rose-500 border-t-transparent"></div>
+          <div
+            class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"
+          ></div>
           <p class="text-gray-500 mt-4">Loading your orders...</p>
         </div>
         
@@ -756,7 +890,7 @@
           <p class="text-gray-500 mt-2">You haven't placed any orders yet.</p>
           <button
             @click="activeSection = 'products'"
-            class="mt-4 px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-colors"
+            class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
           >
             Start Shopping
           </button>
@@ -766,25 +900,27 @@
           <div
             v-for="order in orders"
             :key="order.id"
-            class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100"
+            class="bg-white rounded-2xl shadow-md-soft overflow-hidden border border-gray-100"
           >
             <div class="p-4 border-b border-gray-100 flex justify-between items-center">
               <div>
                 <span class="font-semibold">Order #{{ order.id }}</span>
                 <div class="text-sm text-gray-500">{{ formatDate(order.created_at) }}</div>
               </div>
-              <div class="flex items-center">
-                <span :class="[
-                  'px-3 py-1 rounded-full text-xs font-medium',
-                  order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                  order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                  order.status === 'shipped' ? 'bg-indigo-100 text-indigo-800' :
-                  order.status === 'delivered' ? 'bg-green-100 text-green-800' :
-                  'bg-red-100 text-red-800'
-                ]">
+              <div class="flex items-center space-x-3">
+                <span
+                  :class="[
+                    'px-3 py-1 rounded-full text-xs font-medium',
+                    order.status === 'pending' ? 'bg-yellow-100 text-yellow-800'
+                    : order.status === 'processing' ? 'bg-blue-100 text-blue-800'
+                    : order.status === 'shipped' ? 'bg-indigo-100 text-indigo-800'
+                    : order.status === 'delivered' ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800'
+                  ]"
+                >
                   {{ capitalize(order.status) }}
                 </span>
-                <span class="ml-3 font-semibold">${{ order.total.toFixed(2) }}</span>
+                <span class="font-semibold">${{ order.total.toFixed(2) }}</span>
               </div>
             </div>
             
@@ -793,8 +929,14 @@
                 <div class="md:col-span-2">
                   <h4 class="font-medium mb-3">Order Items</h4>
                   <div class="space-y-3">
-                    <div v-for="item in order.items" :key="item.id" class="flex items-center">
-                      <div class="h-16 w-16 flex-shrink-0 rounded-lg overflow-hidden">
+                    <div
+                      v-for="item in order.items"
+                      :key="item.id"
+                      class="flex items-center"
+                    >
+                      <div
+                        class="h-16 w-16 flex-shrink-0 rounded-lg overflow-hidden"
+                      >
                         <img
                           :src="getProductImage(item.product_id)"
                           :alt="item.product_name"
@@ -812,7 +954,9 @@
                   </div>
                 </div>
                 
-                <div class="border-t pt-4 md:pt-0 md:border-t-0 md:border-l md:pl-6">
+                <div
+                  class="border-t pt-4 md:pt-0 md:border-t-0 md:border-l md:pl-6"
+                >
                   <h4 class="font-medium mb-3">Order Summary</h4>
                   <div class="space-y-2 text-sm">
                     <div class="flex justify-between">
@@ -827,15 +971,23 @@
                       <span class="text-gray-600">Shipping:</span>
                       <span>${{ order.shipping_cost.toFixed(2) }}</span>
                     </div>
-                    <div class="flex justify-between font-semibold text-base pt-2 border-t border-gray-100">
+                    <div
+                      class="flex justify-between font-semibold text-base pt-2 border-t border-gray-100"
+                    >
                       <span>Total:</span>
                       <span>${{ order.total.toFixed(2) }}</span>
                     </div>
                   </div>
-                  
-                  <div v-if="order.discount_code" class="mt-4 text-xs text-gray-500">
+                  <div
+                    v-if="order.discount_code"
+                    class="mt-4 text-xs text-gray-500"
+                  >
                     Discount Code:
-                    <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded">{{ order.discount_code }}</span>
+                    <span
+                      class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded"
+                    >
+                      {{ order.discount_code }}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -844,28 +996,37 @@
         </div>
       </section>
 
-      <!-- Checkout Section -->
-      <section v-if="activeSection === 'checkout'" class="container mx-auto px-4 py-16 max-w-6xl">
+      <!-- CHECKOUT SECTION -->
+      <section
+        v-if="activeSection === 'checkout'"
+        class="container mx-auto px-4 py-16 max-w-6xl"
+      >
         <div class="text-center mb-10">
           <h2 class="text-3xl font-serif font-bold">Checkout</h2>
-          <div class="w-16 h-1 bg-rose-400 mx-auto mt-4"></div>
+          <div class="w-16 h-1 bg-primary mx-auto mt-4"></div>
         </div>
         
-        <div v-if="!cart.length" class="text-center py-16 bg-white rounded-2xl shadow-md">
+        <div
+          v-if="!cart.length"
+          class="text-center py-16 bg-white rounded-2xl shadow-md-soft"
+        >
           <i data-lucide="shopping-cart" class="h-16 w-16 text-gray-300 mx-auto mb-4"></i>
           <h3 class="text-xl font-medium">Your Cart is Empty</h3>
-          <p class="text-gray-500 mt-2">Add products to your cart before proceeding to checkout.</p>
+          <p class="text-gray-500 mt-2">
+            Add products to your cart before proceeding to checkout.
+          </p>
           <button
             @click="activeSection = 'products'"
-            class="mt-4 px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-colors"
+            class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
           >
             Browse Products
           </button>
         </div>
         
         <div v-else class="grid md:grid-cols-3 gap-8">
+          <!-- Customer Info -->
           <div class="md:col-span-2">
-            <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+            <div class="bg-white rounded-2xl shadow-md-soft overflow-hidden">
               <div class="p-6 border-b border-gray-100">
                 <h3 class="text-xl font-medium">Customer Information</h3>
               </div>
@@ -873,138 +1034,230 @@
               <div class="p-6">
                 <form @submit.prevent="processCheckout">
                   <div class="mb-6">
-                    <label class="block text-sm font-medium mb-2" for="name">Full Name</label>
+                    <label
+                      for="name"
+                      class="block text-sm font-medium mb-2"
+                    >
+                      Full Name
+                    </label>
                     <input
                       type="text"
                       id="name"
                       v-model="checkoutInfo.customer_name"
-                      class="w-full rounded-lg border-gray-300 focus:border-rose-300 focus:ring focus:ring-rose-200 focus:ring-opacity-50"
+                      class="w-full rounded-lg border-gray-300
+                             focus:border-primary focus:ring focus:ring-rose-200
+                             focus:ring-opacity-50"
                       placeholder="Your name"
                       required
                     />
                   </div>
-                  
                   <div class="mb-6">
-                    <label class="block text-sm font-medium mb-2" for="email">Email Address</label>
+                    <label
+                      for="email"
+                      class="block text-sm font-medium mb-2"
+                    >
+                      Email Address
+                    </label>
                     <input
                       type="email"
                       id="email"
                       v-model="checkoutInfo.customer_email"
-                      class="w-full rounded-lg border-gray-300 focus:border-rose-300 focus:ring focus:ring-rose-200 focus:ring-opacity-50"
+                      class="w-full rounded-lg border-gray-300
+                             focus:border-primary focus:ring focus:ring-rose-200
+                             focus:ring-opacity-50"
                       placeholder="you@example.com"
                       required
                     />
                   </div>
-                  
                   <div class="mb-6">
-                    <label class="block text-sm font-medium mb-2" for="address">Shipping Address</label>
+                    <label
+                      for="address"
+                      class="block text-sm font-medium mb-2"
+                    >
+                      Shipping Address
+                    </label>
                     <textarea
                       id="address"
                       v-model="checkoutInfo.shipping_address"
                       rows="3"
-                      class="w-full rounded-lg border-gray-300 focus:border-rose-300 focus:ring focus:ring-rose-200 focus:ring-opacity-50"
+                      class="w-full rounded-lg border-gray-300
+                             focus:border-primary focus:ring focus:ring-rose-200
+                             focus:ring-opacity-50"
                       placeholder="Street address, city, state, zip code"
                       required
                     ></textarea>
                   </div>
                   
+                  <!-- Discount -->
                   <div class="mb-6">
-                    <label class="block text-sm font-medium mb-2" for="discount">Discount Code (optional)</label>
+                    <label
+                      for="discount"
+                      class="block text-sm font-medium mb-2"
+                    >
+                      Discount Code (optional)
+                    </label>
                     <div class="flex">
                       <input
                         type="text"
                         id="discount"
                         v-model="discountCode"
-                        class="flex-grow rounded-l-lg border-gray-300 focus:border-rose-300 focus:ring focus:ring-rose-200 focus:ring-opacity-50"
+                        class="flex-grow rounded-l-lg border-gray-300
+                               focus:border-primary focus:ring focus:ring-rose-200
+                               focus:ring-opacity-50"
                         placeholder="Enter code"
                       />
                       <button
                         type="button"
                         @click="applyDiscount"
-                        class="px-4 bg-rose-500 text-white rounded-r-lg hover:bg-rose-600 transition-colors"
+                        class="px-4 bg-primary text-white rounded-r-lg
+                               hover:bg-primary-hover transition-colors"
                       >
                         Apply
                       </button>
                     </div>
-                    <p v-if="discountMessage" :class="['text-sm mt-1', discountValid ? 'text-green-500' : 'text-red-500']">
+                    <p
+                      v-if="discountMessage"
+                      :class="[
+                        'text-sm mt-1',
+                        discountValid ? 'text-green-500' : 'text-red-500'
+                      ]"
+                    >
                       {{ discountMessage }}
                     </p>
                   </div>
                   
+                  <!-- Shipping Method -->
                   <div class="mb-6">
-                    <label class="block text-sm font-medium mb-2">Shipping Method</label>
+                    <label class="block text-sm font-medium mb-2">
+                      Shipping Method
+                    </label>
                     <div class="space-y-2">
-                      <label class="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                      <label
+                        class="flex items-center justify-between
+                               p-3 border rounded-lg cursor-pointer
+                               hover:bg-gray-50 transition-colors"
+                      >
                         <div class="flex items-center">
                           <input
                             type="radio"
                             name="shipping"
                             value="standard"
                             v-model="checkoutInfo.shipping_method"
-                            class="text-rose-500 focus:ring-rose-300"
+                            class="text-primary focus:ring-primary"
                           />
-                          <span class="ml-2">Standard Shipping (3-5 business days)</span>
+                          <span class="ml-2">
+                            Standard Shipping (3-5 business days)
+                          </span>
                         </div>
-                        <span class="text-sm font-medium">${{ standardShippingRate.toFixed(2) }}</span>
+                        <span class="text-sm font-medium">
+                          ${{ standardShippingRate.toFixed(2) }}
+                        </span>
                       </label>
                       
-                      <label class="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                      <label
+                        class="flex items-center justify-between
+                               p-3 border rounded-lg cursor-pointer
+                               hover:bg-gray-50 transition-colors"
+                      >
                         <div class="flex items-center">
                           <input
                             type="radio"
                             name="shipping"
                             value="express"
                             v-model="checkoutInfo.shipping_method"
-                            class="text-rose-500 focus:ring-rose-300"
+                            class="text-primary focus:ring-primary"
                           />
-                          <span class="ml-2">Express Shipping (1-2 business days)</span>
+                          <span class="ml-2">
+                            Express Shipping (1-2 business days)
+                          </span>
                         </div>
-                        <span class="text-sm font-medium">${{ expressShippingRate.toFixed(2) }}</span>
+                        <span class="text-sm font-medium">
+                          ${{ expressShippingRate.toFixed(2) }}
+                        </span>
                       </label>
                     </div>
                   </div>
                   
+                  <!-- Payment Method Notice -->
                   <div class="mb-6">
-                    <label class="block text-sm font-medium mb-2">Payment Method</label>
-                    <div class="p-4 bg-blue-50 text-blue-700 rounded-lg flex items-start">
-                      <svg class="h-5 w-5 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <label class="block text-sm font-medium mb-2">
+                      Payment Method
+                    </label>
+                    <div class="p-4 bg-blue-50 text-blue-700 rounded-lg
+                         flex items-start">
+                      <svg
+                        class="h-5 w-5 mr-2 mt-0.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18
+                             0 9 9 0 0118 0z"
+                        ></path>
                       </svg>
-                      <p class="text-sm">This is a demo store. No actual payment will be processed.</p>
+                      <p class="text-sm">
+                        This is a demo store. No actual payment
+                        will be processed.
+                      </p>
                     </div>
                   </div>
                   
+                  <!-- Submit Button -->
                   <button
                     type="submit"
                     :disabled="isProcessingCheckout"
-                    class="w-full py-3 bg-rose-500 text-white rounded-lg font-medium hover:bg-rose-600 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                    class="w-full py-3 bg-primary text-white rounded-lg font-medium
+                           hover:bg-primary-hover transition-colors disabled:opacity-70
+                           disabled:cursor-not-allowed"
                   >
                     <template v-if="isProcessingCheckout">
-                      <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2
-                                 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135
-                                 5.824 3 7.938l3-2.647z">
-                        </path>
+                      <svg
+                        class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          class="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          stroke-width="4"
+                        ></circle>
+                        <path
+                          class="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373
+                             0 0 5.373 0 12h4zm2
+                             5.291A7.962 7.962 0 014
+                             12H0c0 3.042 1.135
+                             5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Processing...
                     </template>
                     <template v-else>
-                      <i data-lucide="lock" class="h-5 w-5 inline mr-2"></i> Place Order
+                      <i data-lucide="lock" class="h-5 w-5 inline mr-2"></i>
+                      Place Order
                     </template>
                   </button>
                 </form>
               </div>
             </div>
           </div>
-          
+
+          <!-- Order Summary -->
           <div class="md:col-span-1">
-            <div class="bg-white rounded-2xl shadow-md overflow-hidden sticky top-24">
+            <div class="bg-white rounded-2xl shadow-md-soft overflow-hidden sticky top-24">
               <div class="p-6 border-b border-gray-100">
                 <h3 class="text-xl font-medium">Order Summary</h3>
               </div>
-              
               <div class="p-6">
                 <div class="divide-y divide-gray-100">
                   <div
@@ -1012,7 +1265,6 @@
                     :key="item.id"
                     class="flex py-3 first:pt-0"
                   >
-                    <!-- FIX: item.img instead of item.image -->
                     <img
                       :src="item.img"
                       :alt="item.name"
@@ -1021,8 +1273,12 @@
                     <div class="ml-4 flex-grow">
                       <h4 class="font-medium">{{ item.name }}</h4>
                       <div class="flex justify-between text-sm mt-1">
-                        <span class="text-gray-500">Qty: {{ item.quantity }}</span>
-                        <span>${{ (item.price * item.quantity).toFixed(2) }}</span>
+                        <span class="text-gray-500">
+                          Qty: {{ item.quantity }}
+                        </span>
+                        <span>
+                          ${{ (item.price * item.quantity).toFixed(2) }}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -1041,7 +1297,9 @@
                     <span class="text-gray-600">Shipping:</span>
                     <span>${{ calculatedShippingCost.toFixed(2) }}</span>
                   </div>
-                  <div class="flex justify-between font-semibold text-lg pt-2 border-t border-gray-100">
+                  <div
+                    class="flex justify-between font-semibold text-lg pt-2 border-t border-gray-100"
+                  >
                     <span>Total:</span>
                     <span>${{ checkoutTotal.toFixed(2) }}</span>
                   </div>
@@ -1053,14 +1311,21 @@
       </section>
     </main>
 
-    <!-- Shopping Cart Slide-in with more rounded corners -->
+    <!-- Shopping Cart Slide-in -->
     <transition name="slide-right">
       <div v-if="cartOpen" class="fixed inset-0 z-50 overflow-hidden">
-        <div class="absolute inset-0 bg-black/30" @click="cartOpen = false"></div>
-        <div class="absolute top-0 right-0 h-full w-full max-w-md bg-white shadow-xl flex flex-col rounded-l-3xl">
+        <div
+          class="absolute inset-0 bg-black/30"
+          @click="cartOpen = false"
+        ></div>
+        <div
+          class="absolute top-0 right-0 h-full w-full max-w-md bg-white shadow-xl flex flex-col
+                 rounded-l-3xl"
+        >
           <div class="flex items-center justify-between p-4 border-b">
             <h2 class="text-xl font-semibold flex items-center">
-              <i data-lucide="shopping-cart" class="h-5 w-5 mr-2"></i> Your Shopping Cart
+              <i data-lucide="shopping-cart" class="h-5 w-5 mr-2"></i>
+              Your Shopping Cart
             </h2>
             <button
               @click="cartOpen = false"
@@ -1071,26 +1336,41 @@
           </div>
           
           <div class="flex-grow overflow-y-auto py-4 px-4">
-            <div v-if="!cart.length" class="flex flex-col items-center justify-center h-full text-center">
+            <div
+              v-if="!cart.length"
+              class="flex flex-col items-center justify-center h-full text-center"
+            >
               <i data-lucide="shopping-cart" class="h-16 w-16 text-gray-300 mb-4"></i>
               <h3 class="text-lg font-medium">Your cart is empty</h3>
-              <p class="text-gray-500 mt-1">Add some delicious treats to get started!</p>
+              <p class="text-gray-500 mt-1">
+                Add some delicious treats to get started!
+              </p>
               <button
                 @click="cartOpen = false; activeSection = 'products'"
-                class="mt-4 px-4 py-2 bg-rose-500 text-white rounded-full hover:bg-rose-600 transition-colors"
+                class="mt-4 px-4 py-2 bg-primary text-white rounded-full
+                       hover:bg-primary-hover transition-colors"
               >
                 Browse Products
               </button>
             </div>
             
-            <transition-group v-else name="slide-up" tag="div" class="space-y-4">
+            <transition-group
+              v-else
+              name="slide-up"
+              tag="div"
+              class="space-y-4"
+            >
               <div
                 v-for="(item, index) in cart"
                 :key="item.id"
-                class="flex items-center p-3 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+                class="flex items-center p-3 bg-white rounded-2xl shadow-sm
+                       border border-gray-100 hover:shadow-md transition-shadow"
               >
-                <!-- FIX: item.img instead of item.image -->
-                <img :src="item.img" :alt="item.name" class="w-16 h-16 rounded-xl object-cover" />
+                <img
+                  :src="item.img"
+                  :alt="item.name"
+                  class="w-16 h-16 rounded-xl object-cover"
+                />
                 <div class="ml-4 flex-grow">
                   <h4 class="font-medium">{{ item.name }}</h4>
                   <div class="flex justify-between items-center mt-1">
@@ -1110,10 +1390,13 @@
                       </button>
                     </div>
                     <div class="flex items-center">
-                      <span class="font-semibold">${{ (item.price * item.quantity).toFixed(2) }}</span>
+                      <span class="font-semibold">
+                        ${{ (item.price * item.quantity).toFixed(2) }}
+                      </span>
                       <button
                         @click="removeFromCart(index)"
-                        class="ml-2 p-1 text-gray-400 hover:text-red-500 transition-colors"
+                        class="ml-2 p-1 text-gray-400 hover:text-red-500
+                               transition-colors"
                       >
                         <i data-lucide="x" class="h-4 w-4"></i>
                       </button>
@@ -1124,24 +1407,38 @@
             </transition-group>
           </div>
           
-          <div v-if="cart.length > 0" class="border-t p-4 bg-gray-50 rounded-bl-3xl">
+          <div
+            v-if="cart.length > 0"
+            class="border-t p-4 bg-gray-50 rounded-bl-3xl"
+          >
             <div class="mb-3">
-              <label class="block text-sm font-medium mb-1">Discount Code:</label>
+              <label class="block text-sm font-medium mb-1">
+                Discount Code:
+              </label>
               <div class="flex">
                 <input
                   type="text"
                   v-model="discountCode"
-                  class="flex-grow rounded-l-full border-gray-300 focus:border-rose-300 focus:ring focus:ring-rose-200 focus:ring-opacity-50"
+                  class="flex-grow rounded-l-full border-gray-300
+                         focus:border-primary focus:ring focus:ring-rose-200
+                         focus:ring-opacity-50"
                   placeholder="Enter code"
                 />
                 <button
                   @click="applyDiscount"
-                  class="px-4 bg-rose-500 text-white rounded-r-full hover:bg-rose-600 transition-colors"
+                  class="px-4 bg-primary text-white rounded-r-full
+                         hover:bg-primary-hover transition-colors"
                 >
                   Apply
                 </button>
               </div>
-              <p v-if="discountMessage" :class="['text-sm mt-1', discountValid ? 'text-green-500' : 'text-red-500']">
+              <p
+                v-if="discountMessage"
+                :class="[
+                  'text-sm mt-1',
+                  discountValid ? 'text-green-500' : 'text-red-500'
+                ]"
+              >
                 {{ discountMessage }}
               </p>
             </div>
@@ -1157,9 +1454,13 @@
               </div>
               <div class="flex justify-between text-sm">
                 <span>Shipping:</span>
-                <span>{{ cartSubtotal >= 50 ? 'Free' : `$${shippingCost.toFixed(2)}` }}</span>
+                <span>
+                  {{ cartSubtotal >= 50 ? 'Free' : `$${shippingCost.toFixed(2)}` }}
+                </span>
               </div>
-              <div class="flex justify-between font-semibold text-lg pt-2 border-t">
+              <div
+                class="flex justify-between font-semibold text-lg pt-2 border-t"
+              >
                 <span>Total:</span>
                 <span>${{ cartTotal.toFixed(2) }}</span>
               </div>
@@ -1168,13 +1469,15 @@
             <div class="space-y-2">
               <button
                 @click="proceedToCheckout"
-                class="w-full py-3 bg-rose-500 text-white rounded-full font-medium hover:bg-rose-600 transition-colors"
+                class="w-full py-3 bg-primary text-white rounded-full
+                       font-medium hover:bg-primary-hover transition-colors"
               >
                 Proceed to Checkout
               </button>
               <button
                 @click="cartOpen = false"
-                class="w-full py-2 border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+                class="w-full py-2 border border-gray-300 rounded-full
+                       hover:bg-gray-100 transition-colors"
               >
                 Continue Shopping
               </button>
@@ -1186,43 +1489,62 @@
     
     <!-- Product Quick View Modal -->
     <transition name="fade">
-      <div v-if="productInView" class="fixed inset-0 z-50 overflow-hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/50" @click="productInView = null"></div>
-        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+      <div
+        v-if="productInView"
+        class="fixed inset-0 z-50 overflow-hidden flex items-center justify-center p-4"
+      >
+        <div
+          class="absolute inset-0 bg-black/50"
+          @click="productInView = null"
+        ></div>
+        <div
+          class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden"
+        >
           <button
             @click="productInView = null"
-            class="absolute top-2 right-2 p-1 bg-white/80 rounded-full z-10 hover:bg-pink-100 transition-colors"
+            class="absolute top-2 right-2 p-1 bg-white/80 rounded-full z-10
+                   hover:bg-pink-100 transition-colors"
           >
             <i data-lucide="x" class="h-6 w-6"></i>
           </button>
           
           <div class="flex flex-col md:flex-row">
             <div class="md:w-1/2 relative overflow-hidden">
-              <!-- FIX: productInView.img instead of productInView.image -->
               <img
                 :src="productInView.img"
                 :alt="productInView.name"
                 class="w-full h-64 md:h-full object-cover"
               />
               <div class="absolute top-3 left-3">
-                <span v-if="productInView.category" class="px-2 py-1 bg-black/50 text-white text-xs rounded-full">
+                <span
+                  v-if="productInView.category"
+                  class="px-2 py-1 bg-black/50 text-white text-xs rounded-full select-none"
+                >
                   {{ productInView.category }}
                 </span>
               </div>
             </div>
-            
             <div class="md:w-1/2 p-6">
-              <h2 class="text-2xl font-serif font-semibold">{{ productInView.name }}</h2>
+              <h2 class="text-2xl font-serif font-semibold">
+                {{ productInView.name }}
+              </h2>
               <div class="flex items-center mt-1 mb-4">
                 <div class="flex text-yellow-400">
-                  <i v-for="star in 5" :key="star" data-lucide="star" class="h-4 w-4 fill-current"></i>
+                  <i
+                    v-for="star in 5"
+                    :key="star"
+                    data-lucide="star"
+                    class="h-4 w-4 fill-current"
+                  ></i>
                 </div>
-                <span class="text-sm text-gray-500 ml-2">(24 reviews)</span>
+                <span class="text-sm text-gray-500 ml-2">
+                  (24 reviews)
+                </span>
               </div>
-              
-              <p class="text-gray-600 mb-4">{{ productInView.description }}</p>
-              
-              <div class="text-2xl font-semibold text-rose-500 mb-6">
+              <p class="text-gray-600 mb-4">
+                {{ productInView.description }}
+              </p>
+              <div class="text-2xl font-semibold text-primary mb-6">
                 ${{ productInView.price.toFixed(2) }}
               </div>
               
@@ -1247,10 +1569,10 @@
                     <i data-lucide="plus" class="h-4 w-4"></i>
                   </button>
                 </div>
-                
                 <button
                   @click="addToCartWithQuantity"
-                  class="flex-grow py-2 bg-rose-500 text-white rounded-xl font-medium hover:bg-rose-600 transition-colors hover:scale-105 active:scale-95"
+                  class="flex-grow py-2 bg-primary text-white rounded-xl font-medium
+                         hover:bg-primary-hover transition-colors hover:scale-105 active:scale-95"
                 >
                   Add to Cart
                 </button>
@@ -1261,13 +1583,13 @@
                 :class="[
                   'flex items-center justify-center w-full py-2 rounded-xl border transition-colors',
                   isInWishlist(productInView.id)
-                    ? 'border-rose-500 text-rose-500 bg-rose-50'
+                    ? 'border-primary text-primary bg-rose-50'
                     : 'border-gray-300 hover:bg-gray-100'
                 ]"
               >
                 <i
                   data-lucide="heart"
-                  :class="[ isInWishlist(productInView.id) ? 'fill-rose-500' : '' ]"
+                  :class="[ isInWishlist(productInView.id) ? 'fill-primary' : '' ]"
                   class="h-5 w-5 mr-2"
                 ></i>
                 {{ isInWishlist(productInView.id) ? 'Remove from Wishlist' : 'Add to Wishlist' }}
@@ -1280,18 +1602,34 @@
     
     <!-- Order Success Modal -->
     <transition name="fade">
-      <div v-if="orderSuccessModal" class="fixed inset-0 z-50 overflow-hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/50" @click="orderSuccessModal = false"></div>
-        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+      <div
+        v-if="orderSuccessModal"
+        class="fixed inset-0 z-50 overflow-hidden flex items-center justify-center p-4"
+      >
+        <div
+          class="absolute inset-0 bg-black/50"
+          @click="orderSuccessModal = false"
+        ></div>
+        <div
+          class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+        >
           <div class="p-6 text-center">
-            <div class="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
+            <div
+              class="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4"
+            >
               <i data-lucide="check-circle" class="h-10 w-10 text-green-500"></i>
             </div>
-            <h2 class="text-2xl font-bold mb-2">Order Placed Successfully</h2>
-            <p class="text-gray-600 mb-6">Thank you for your order!</p>
+            <h2 class="text-2xl font-bold mb-2">
+              Order Placed Successfully
+            </h2>
+            <p class="text-gray-600 mb-6">
+              Thank you for your order!
+            </p>
             
             <div class="bg-gray-100 rounded-xl p-4 mb-6 text-left">
-              <p class="text-center font-semibold mb-2">Order #{{ lastOrderId }}</p>
+              <p class="text-center font-semibold mb-2">
+                Order #{{ lastOrderId }}
+              </p>
               <p class="text-sm text-gray-500 text-center">
                 This is a demo store. No actual payment has been processed.
               </p>
@@ -1300,13 +1638,15 @@
             <div class="flex space-x-3">
               <button
                 @click="orderSuccessModal = false"
-                class="flex-1 py-2 border border-gray-300 rounded-xl hover:bg-gray-100 transition-colors"
+                class="flex-1 py-2 border border-gray-300 rounded-xl
+                       hover:bg-gray-100 transition-colors"
               >
                 Close
               </button>
               <button
                 @click="viewOrders"
-                class="flex-1 py-2 bg-rose-500 text-white rounded-xl font-medium hover:bg-rose-600 transition-colors"
+                class="flex-1 py-2 bg-primary text-white rounded-xl font-medium
+                       hover:bg-primary-hover transition-colors"
               >
                 View My Orders
               </button>
@@ -1317,9 +1657,10 @@
     </transition>
   </div>
 
+  <!-- Vue App Logic -->
   <script>
     const { createApp, ref, computed, onMounted, watch } = Vue;
-    
+
     createApp({
       setup() {
         // State
@@ -1348,21 +1689,21 @@
         const isProcessingCheckout = ref(false);
         const lastOrderId = ref(null);
         const orderSuccessModal = ref(false);
-        
+
         const checkoutInfo = ref({
           customer_name: '',
           customer_email: '',
           shipping_address: '',
           shipping_method: 'standard'
         });
-        
+
         const user = ref({
           logged_in: false,
           email: '',
           is_admin: false
         });
-        
-        // Features for the "Why Choose Us" section
+
+        // Features
         const features = [
           {
             title: 'Premium Ingredients',
@@ -1400,8 +1741,8 @@
             rating: 5
           }
         ];
-        
-        // Load data from localStorage
+
+        // Load from localStorage
         const loadStoredData = () => {
           const storedCart = localStorage.getItem('cartItems');
           const storedWishlist = localStorage.getItem('wishlistItems');
@@ -1424,18 +1765,18 @@
             }
           }
         };
-        
-        // Save cart to localStorage
+
+        // Save cart
         const saveCart = () => {
           localStorage.setItem('cartItems', JSON.stringify(cart.value));
         };
-        
-        // Save wishlist to localStorage
+
+        // Save wishlist
         const saveWishlist = () => {
           localStorage.setItem('wishlistItems', JSON.stringify(wishlist.value));
         };
-        
-        // Fetch products from API
+
+        // Fetch data
         const fetchProducts = async () => {
           try {
             const response = await fetch('/api/products');
@@ -1447,8 +1788,6 @@
             showNotification('Failed to load products. Please try again.', 'error');
           }
         };
-        
-        // Fetch categories from API
         const fetchCategories = async () => {
           try {
             const response = await fetch('/api/categories');
@@ -1459,8 +1798,6 @@
             console.error('Error fetching categories:', error);
           }
         };
-        
-        // Fetch current user
         const fetchCurrentUser = async () => {
           try {
             const response = await fetch('/api/current_user');
@@ -1476,13 +1813,9 @@
             console.error('Error fetching current user:', error);
           }
         };
-        
-        // Fetch user orders
         const fetchOrders = async () => {
           if (!user.value.logged_in) return;
-          
           isLoadingOrders.value = true;
-          
           try {
             const response = await fetch('/api/orders');
             if (response.ok) {
@@ -1495,25 +1828,16 @@
             isLoadingOrders.value = false;
           }
         };
-        
-        // Helper method to get product image from ID
+
+        // Helpers
         const getProductImage = (productId) => {
           const product = products.value.find(p => p.id === productId);
           return product ? product.img : '';
         };
-        
-        // Helper method to get product by ID
-        const getProductById = (productId) => {
-          return products.value.find(p => p.id === productId) || null;
-        };
-        
-        // Helper method to truncate text
         const truncateText = (text, maxLength) => {
           if (!text) return '';
           return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
         };
-        
-        // Helper method to format date
         const formatDate = (dateString) => {
           if (!dateString) return '';
           const date = new Date(dateString);
@@ -1525,136 +1849,109 @@
             minute: '2-digit'
           });
         };
-        
-        // Capitalize filter
         const capitalize = (str) => {
           if (!str) return '';
           return str.charAt(0).toUpperCase() + str.slice(1);
         };
-        
-        // Computed properties
+
+        // Computed
         const filteredProducts = computed(() => {
           let result = products.value;
-          
-          // Apply search filter
+          // Search
           if (searchQuery.value) {
-            const query = searchQuery.value.toLowerCase();
+            const q = searchQuery.value.toLowerCase();
             result = result.filter(p =>
-              p.name.toLowerCase().includes(query) ||
-              (p.description && p.description.toLowerCase().includes(query))
+              p.name.toLowerCase().includes(q) ||
+              (p.description && p.description.toLowerCase().includes(q))
             );
           }
-          
-          // Apply category filter
+          // Category
           if (currentFilter.value !== 'all') {
             result = result.filter(p => {
               if (!p.category) return false;
               return p.category.toLowerCase() === currentFilter.value;
             });
           }
-          
-          // Apply sorting
+          // Sort
           if (sortOrder.value) {
             if (sortOrder.value === 'price-asc') {
-              result = [...result].sort((a, b) => a.price - b.price);
+              result.sort((a, b) => a.price - b.price);
             } else if (sortOrder.value === 'price-desc') {
-              result = [...result].sort((a, b) => b.price - a.price);
+              result.sort((a, b) => b.price - a.price);
             } else if (sortOrder.value === 'name-asc') {
-              result = [...result].sort((a, b) => a.name.localeCompare(b.name));
+              result.sort((a, b) => a.name.localeCompare(b.name));
             } else if (sortOrder.value === 'name-desc') {
-              result = [...result].sort((a, b) => b.name.localeCompare(a.name));
+              result.sort((a, b) => b.name.localeCompare(a.name));
             }
           }
-          
           return result;
         });
-        
         const featuredProducts = computed(() => {
+          // Random subset, 3 items
           return [...products.value].sort(() => 0.5 - Math.random()).slice(0, 3);
         });
-        
         const wishlistProducts = computed(() => {
+          // Filter products that are in the wishlist
           return products.value.filter(product => wishlist.value.includes(product.id));
         });
-        
         const cartItemCount = computed(() => {
-          return cart.value.reduce((total, item) => total + item.quantity, 0);
+          return cart.value.reduce((sum, item) => sum + item.quantity, 0);
         });
-        
         const cartSubtotal = computed(() => {
-          return cart.value.reduce((total, item) => total + (item.price * item.quantity), 0);
+          return cart.value.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         });
-        
         const calculatedShippingCost = computed(() => {
-          return checkoutInfo.value.shipping_method === 'standard' ? standardShippingRate.value : expressShippingRate.value;
+          return checkoutInfo.value.shipping_method === 'standard'
+            ? standardShippingRate.value
+            : expressShippingRate.value;
         });
-        
         const cartTotal = computed(() => {
           return cartSubtotal.value - discountAmount.value + shippingCost.value;
         });
-        
         const checkoutTotal = computed(() => {
           return cartSubtotal.value - discountAmount.value + calculatedShippingCost.value;
         });
-        
+
         // Notification system
         const showNotification = (message, type = 'success') => {
           const newToast = { id: Date.now(), message, type };
           toasts.value.push(newToast);
-          
-          // Auto-remove toast after 3 seconds
           setTimeout(() => {
             removeToast(newToast.id);
           }, 3000);
         };
-        
         const removeToast = (id) => {
-          toasts.value = toasts.value.filter(toast => toast.id !== id);
+          toasts.value = toasts.value.filter(t => t.id !== id);
         };
-        
-        // Cart operations
+
+        // Cart
         const addToCart = (product) => {
-          const existingItem = cart.value.find(item => item.id === product.id);
-          
-          if (existingItem) {
-            existingItem.quantity += 1;
+          const existing = cart.value.find(item => item.id === product.id);
+          if (existing) {
+            existing.quantity++;
           } else {
-            cart.value.push({
-              ...product,
-              quantity: 1
-            });
+            cart.value.push({ ...product, quantity: 1 });
           }
-          
           saveCart();
           updateShippingCost();
           showNotification(`${product.name} added to cart!`);
         };
-        
         const addToCartWithQuantity = () => {
           if (!productInView.value) return;
-          
           const product = productInView.value;
-          const quantity = parseInt(modalQuantity.value) || 1;
-          const existingItem = cart.value.find(item => item.id === product.id);
-          
-          if (existingItem) {
-            existingItem.quantity += quantity;
+          const qty = parseInt(modalQuantity.value) || 1;
+          const existing = cart.value.find(item => item.id === product.id);
+          if (existing) {
+            existing.quantity += qty;
           } else {
-            cart.value.push({
-              ...product,
-              quantity
-            });
+            cart.value.push({ ...product, quantity: qty });
           }
-          
           saveCart();
           updateShippingCost();
-          showNotification(`${quantity} ${product.name} added to cart!`);
-          
-          // Close modal and reset quantity
+          showNotification(`${qty} ${product.name} added to cart!`);
           productInView.value = null;
           modalQuantity.value = 1;
         };
-        
         const removeFromCart = (index) => {
           const item = cart.value[index];
           cart.value.splice(index, 1);
@@ -1662,61 +1959,54 @@
           updateShippingCost();
           showNotification(`${item.name} removed from cart!`);
         };
-        
         const increaseQuantity = (index) => {
-          cart.value[index].quantity += 1;
+          cart.value[index].quantity++;
           saveCart();
           updateShippingCost();
         };
-        
         const decreaseQuantity = (index) => {
           if (cart.value[index].quantity > 1) {
-            cart.value[index].quantity -= 1;
+            cart.value[index].quantity--;
             saveCart();
             updateShippingCost();
           } else {
             removeFromCart(index);
           }
         };
-        
         const updateShippingCost = () => {
-          // Free shipping for orders over $50
-          shippingCost.value = cartSubtotal.value >= 50 ? 0 : standardShippingRate.value;
+          shippingCost.value = cartSubtotal.value >= 50
+            ? 0
+            : standardShippingRate.value;
         };
-        
-        // Wishlist operations
+
+        // Wishlist
         const toggleWishlist = (productId) => {
-          const index = wishlist.value.indexOf(productId);
-          
-          if (index === -1) {
+          const idx = wishlist.value.indexOf(productId);
+          if (idx === -1) {
             wishlist.value.push(productId);
             showNotification('Item added to wishlist!');
           } else {
-            wishlist.value.splice(index, 1);
+            wishlist.value.splice(idx, 1);
             showNotification('Item removed from wishlist!');
           }
-          
           saveWishlist();
         };
-        
-        const isInWishlist = (productId) => {
-          return wishlist.value.includes(productId);
-        };
-        
-        // Product modal
+        const isInWishlist = (productId) => wishlist.value.includes(productId);
+
+        // Product Modal
         const showProductDetails = (product) => {
           productInView.value = product;
           modalQuantity.value = 1;
         };
-        
-        // Filter and sort operations
+
+        // Filters / Sorting
         const resetFilters = () => {
           searchQuery.value = '';
           currentFilter.value = 'all';
           sortOrder.value = '';
         };
-        
-        // Discount operations
+
+        // Discount
         const applyDiscount = async () => {
           if (!discountCode.value) {
             discountMessage.value = '';
@@ -1724,21 +2014,15 @@
             discountAmount.value = 0;
             return;
           }
-          
           try {
             const response = await fetch('/api/validate-discount', {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
+              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ code: discountCode.value })
             });
-            
             const result = await response.json();
-            
             if (result.success) {
               discountValid.value = true;
-              
               if (result.type === 'percent') {
                 discountAmount.value = cartSubtotal.value * (result.amount / 100);
                 discountMessage.value = `${result.amount}% discount applied!`;
@@ -1758,31 +2042,23 @@
             discountMessage.value = 'Error validating discount code';
           }
         };
-        
-        // Checkout operations
+
+        // Checkout
         const proceedToCheckout = () => {
-          if (cart.value.length === 0) {
+          if (!cart.value.length) {
             showNotification('Your cart is empty!', 'error');
             return;
           }
-          
-          // Close cart slide-in
           cartOpen.value = false;
-          
-          // Change to checkout section
           activeSection.value = 'checkout';
         };
-        
         const processCheckout = async () => {
-          if (cart.value.length === 0) {
+          if (!cart.value.length) {
             showNotification('Your cart is empty!', 'error');
             return;
           }
-          
           isProcessingCheckout.value = true;
-          
           try {
-            // Prepare checkout data
             const checkoutData = {
               items: cart.value.map(item => ({
                 id: item.id,
@@ -1795,36 +2071,21 @@
               customer_email: checkoutInfo.value.customer_email,
               shipping_address: checkoutInfo.value.shipping_address
             };
-            
-            // Submit order to API
             const response = await fetch('/api/checkout', {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
+              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(checkoutData)
             });
-            
             const result = await response.json();
-            
             if (result.success) {
-              // Store order ID
               lastOrderId.value = result.order_id;
-              
-              // Clear cart
               cart.value = [];
               saveCart();
-              
-              // Reset discount
               discountCode.value = '';
               discountMessage.value = '';
               discountValid.value = false;
               discountAmount.value = 0;
-              
-              // Show success modal
               orderSuccessModal.value = true;
-              
-              // Refresh orders if user is logged in
               if (user.value.logged_in) {
                 fetchOrders();
               }
@@ -1838,116 +2099,66 @@
             isProcessingCheckout.value = false;
           }
         };
-        
         const viewOrders = () => {
-          // Close success modal
           orderSuccessModal.value = false;
-          
-          // Navigate to orders section
           activeSection.value = 'orders';
         };
-        
-        // Lifecycle hooks
+
+        // Lifecycle
         onMounted(() => {
           loadStoredData();
           fetchProducts();
           fetchCategories();
           fetchCurrentUser();
           updateShippingCost();
-          
-          // Initialize Lucide icons
-          lucide.createIcons();
+          lucide.createIcons(); // Initialize Lucide
         });
-        
-        // Watchers
         watch(cartSubtotal, () => {
           updateShippingCost();
-          
-          // Recalculate discount amount when cart subtotal changes
           if (discountValid.value && discountMessage.value.includes('%')) {
-            const percentage = parseFloat(discountMessage.value);
-            discountAmount.value = cartSubtotal.value * (percentage / 100);
+            const percent = parseFloat(discountMessage.value);
+            discountAmount.value = cartSubtotal.value * (percent / 100);
           }
         });
-        
-        watch(activeSection, (newSection) => {
-          if (newSection === 'orders' && user.value.logged_in) {
+        watch(activeSection, (section) => {
+          if (section === 'orders' && user.value.logged_in) {
             fetchOrders();
           }
         });
-        
-        watch(() => user.value.logged_in, (isLoggedIn) => {
-          if (isLoggedIn) {
+        watch(() => user.value.logged_in, (loggedIn) => {
+          if (loggedIn) {
             checkoutInfo.value.customer_email = user.value.email;
             if (activeSection.value === 'orders') {
               fetchOrders();
             }
           }
         });
-        
+
         return {
-          // State and props
-          activeSection,
-          menuOpen,
-          cartOpen,
-          products,
-          cart,
-          wishlist,
-          wishlistProducts,
-          searchQuery,
-          currentFilter,
-          sortOrder,
-          categories,
-          orders,
-          user,
-          toasts,
-          productInView,
-          modalQuantity,
-          discountCode,
-          discountMessage,
-          discountValid,
-          discountAmount,
-          shippingCost,
-          standardShippingRate,
-          expressShippingRate,
-          checkoutInfo,
-          isLoadingOrders,
-          isProcessingCheckout,
-          lastOrderId,
-          orderSuccessModal,
-          features,
-          testimonials,
-          
+          // State
+          activeSection, menuOpen, cartOpen,
+          products, cart, wishlist, searchQuery,
+          currentFilter, sortOrder, categories,
+          orders, user, toasts, productInView,
+          modalQuantity, discountCode, discountMessage,
+          discountValid, discountAmount, shippingCost,
+          standardShippingRate, expressShippingRate,
+          checkoutInfo, isLoadingOrders, isProcessingCheckout,
+          lastOrderId, orderSuccessModal, features, testimonials,
+
           // Computed
-          filteredProducts,
-          featuredProducts,
-          cartItemCount,
-          cartSubtotal,
-          cartTotal,
-          checkoutTotal,
-          calculatedShippingCost,
-          
+          filteredProducts, featuredProducts,
+          wishlistProducts, cartItemCount, cartSubtotal,
+          cartTotal, checkoutTotal, calculatedShippingCost,
+
           // Methods
-          getProductById,
-          getProductImage,
-          truncateText,
-          formatDate,
-          capitalize,
-          showNotification,
-          removeToast,
-          addToCart,
-          addToCartWithQuantity,
-          removeFromCart,
-          increaseQuantity,
-          decreaseQuantity,
-          toggleWishlist,
-          isInWishlist,
-          showProductDetails,
-          resetFilters,
-          applyDiscount,
-          proceedToCheckout,
-          processCheckout,
-          viewOrders
+          getProductImage, truncateText, formatDate,
+          capitalize, showNotification, removeToast,
+          addToCart, addToCartWithQuantity, removeFromCart,
+          increaseQuantity, decreaseQuantity, updateShippingCost,
+          toggleWishlist, isInWishlist, showProductDetails,
+          resetFilters, applyDiscount, proceedToCheckout,
+          processCheckout, viewOrders
         };
       }
     }).mount('#app');
