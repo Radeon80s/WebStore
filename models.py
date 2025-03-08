@@ -20,7 +20,6 @@ def init_db(app):
 
     with app.app_context():
         db.create_all()
-    add_missing_columns(app)
 
 def add_missing_columns(app):
     with app.app_context():
