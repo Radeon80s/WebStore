@@ -434,27 +434,32 @@ def admin_edit_product(pid):
 @app.route('/admin/products/<int:pid>/delete', methods=['POST'])
 @admin_required
 def admin_delete_product(pid):
+    from sqlalchemy import text
+    
     product = Product.query.get_or_404(pid)
     try:
         # Find all order items that reference this product
         order_items = OrderItem.query.filter_by(product_id=pid).all()
         
-        # Update order items to set product_id to NULL but preserve product info
+        # Step 1: Store item IDs and ensure product info is preserved
+        item_ids = []
         for item in order_items:
-            # Make sure product name/price are saved before nullifying the relationship
+            item_ids.append(item.id)
             if not item.product_name:
                 item.product_name = product.name
             if not item.product_price:
                 item.product_price = product.price
-            # Now set product_id to NULL
-            item.product_id = None
-        
-        # Commit these changes first
         db.session.commit()
         
-        # Now delete the product
+        # Step 2: Delete the product first (breaks foreign key relationship)
         db.session.delete(product)
         db.session.commit()
+        
+        # Step 3: Use direct SQL to set product_id to NULL for affected items
+        if item_ids:
+            item_ids_str = ','.join(str(id) for id in item_ids)
+            db.session.execute(text(f"UPDATE order_items SET product_id = NULL WHERE id IN ({item_ids_str})"))
+            db.session.commit()
         
         flash("Product deleted successfully!", "success")
     except Exception as e:
@@ -462,6 +467,56 @@ def admin_delete_product(pid):
         flash(f"Error deleting product: {str(e)}", "danger")
     
     return redirect(url_for('admin_products'))
+
+
+@app.route('/admin/fix-database', methods=['GET'])
+@admin_required
+def admin_fix_database():
+    from sqlalchemy import text
+    
+    try:
+        # Find and drop the existing constraint
+        db.session.execute(text("""
+        DO $$
+        DECLARE
+            constraint_name VARCHAR;
+        BEGIN
+            SELECT tc.constraint_name INTO constraint_name
+            FROM information_schema.table_constraints tc
+            JOIN information_schema.constraint_column_usage ccu ON tc.constraint_name = ccu.constraint_name
+            WHERE tc.table_name = 'order_items' 
+            AND tc.constraint_type = 'FOREIGN KEY' 
+            AND ccu.column_name = 'product_id';
+            
+            IF constraint_name IS NOT NULL THEN
+                EXECUTE 'ALTER TABLE order_items DROP CONSTRAINT ' || constraint_name;
+            END IF;
+        END
+        $$;
+        """))
+        
+        # Drop NOT NULL constraint
+        db.session.execute(text("ALTER TABLE order_items ALTER COLUMN product_id DROP NOT NULL;"))
+        
+        # Add new constraint with ON DELETE SET NULL
+        db.session.execute(text("""
+        ALTER TABLE order_items
+        ADD CONSTRAINT fk_order_items_product
+        FOREIGN KEY (product_id)
+        REFERENCES products(id)
+        ON DELETE SET NULL;
+        """))
+        
+        db.session.commit()
+        
+        # Disable the migration from running again
+        with open('.migration_complete', 'w') as f:
+            f.write('Migration completed on ' + datetime.now().isoformat())
+        
+        return "Database fixed successfully!"
+    except Exception as e:
+        db.session.rollback()
+        return f"Error fixing database: {str(e)}"
 
 @app.route('/admin/discounts')
 @admin_required
