@@ -468,56 +468,6 @@ def admin_delete_product(pid):
     
     return redirect(url_for('admin_products'))
 
-
-@app.route('/admin/fix-database', methods=['GET'])
-@admin_required
-def admin_fix_database():
-    from sqlalchemy import text
-    
-    try:
-        # Find and drop the existing constraint
-        db.session.execute(text("""
-        DO $$
-        DECLARE
-            constraint_name VARCHAR;
-        BEGIN
-            SELECT tc.constraint_name INTO constraint_name
-            FROM information_schema.table_constraints tc
-            JOIN information_schema.constraint_column_usage ccu ON tc.constraint_name = ccu.constraint_name
-            WHERE tc.table_name = 'order_items' 
-            AND tc.constraint_type = 'FOREIGN KEY' 
-            AND ccu.column_name = 'product_id';
-            
-            IF constraint_name IS NOT NULL THEN
-                EXECUTE 'ALTER TABLE order_items DROP CONSTRAINT ' || constraint_name;
-            END IF;
-        END
-        $$;
-        """))
-        
-        # Drop NOT NULL constraint
-        db.session.execute(text("ALTER TABLE order_items ALTER COLUMN product_id DROP NOT NULL;"))
-        
-        # Add new constraint with ON DELETE SET NULL
-        db.session.execute(text("""
-        ALTER TABLE order_items
-        ADD CONSTRAINT fk_order_items_product
-        FOREIGN KEY (product_id)
-        REFERENCES products(id)
-        ON DELETE SET NULL;
-        """))
-        
-        db.session.commit()
-        
-        # Disable the migration from running again
-        with open('.migration_complete', 'w') as f:
-            f.write('Migration completed on ' + datetime.now().isoformat())
-        
-        return "Database fixed successfully!"
-    except Exception as e:
-        db.session.rollback()
-        return f"Error fixing database: {str(e)}"
-
 @app.route('/admin/discounts')
 @admin_required
 def admin_discounts():
