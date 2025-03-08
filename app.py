@@ -319,6 +319,8 @@ def admin_dashboard():
     
     # Get recent orders
     recent_orders = Order.query.order_by(Order.created_at.desc()).limit(5).all()
+
+    discounts = DiscountCode.query.order_by(DiscountCode.created_at.desc()).all()
     
     # Calculate total revenue
     total_revenue = db.session.query(db.func.sum(Order.total)).scalar() or 0
@@ -332,7 +334,9 @@ def admin_dashboard():
         discount_count=discount_count,
         recent_orders=recent_orders,
         total_revenue=total_revenue,
-        now=datetime.utcnow()
+        discounts=discounts,
+        now=datetime.utcnow(),
+        timedelta=timedelta
     )
 
 @app.route('/admin/products')
