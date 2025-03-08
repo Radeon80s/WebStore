@@ -436,8 +436,26 @@ def admin_edit_product(pid):
 def admin_delete_product(pid):
     product = Product.query.get_or_404(pid)
     try:
+        # Find all order items that reference this product
+        order_items = OrderItem.query.filter_by(product_id=pid).all()
+        
+        # Update order items to set product_id to NULL but preserve product info
+        for item in order_items:
+            # Make sure product name/price are saved before nullifying the relationship
+            if not item.product_name:
+                item.product_name = product.name
+            if not item.product_price:
+                item.product_price = product.price
+            # Now set product_id to NULL
+            item.product_id = None
+        
+        # Commit these changes first
+        db.session.commit()
+        
+        # Now delete the product
         db.session.delete(product)
         db.session.commit()
+        
         flash("Product deleted successfully!", "success")
     except Exception as e:
         db.session.rollback()
