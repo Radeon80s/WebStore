@@ -4,25 +4,20 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SweetBites - Premium Treats</title>
-  
-  <!-- Tailwind CSS -->
+
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Lucide Icons -->
+
   <script src="https://unpkg.com/lucide@latest"></script>
-  
-  <!-- Google Fonts -->
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   >
-  
-  <!-- Vue 3 Production Build -->
+
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-  
-  <!-- Tailwind Custom Config -->
+
   <script>
     tailwind.config = {
       theme: {
@@ -48,9 +43,9 @@
       }
     }
   </script>
-  
+
   <style>
-    /* Smooth transitions for Vue */
+
     .fade-enter-active,
     .fade-leave-active {
       transition: opacity 0.3s ease;
@@ -80,7 +75,6 @@
       transform: translateX(100%);
     }
 
-    /* For the floating shapes (optional) */
     @keyframes float-1 {
       0%, 100% { transform: translate(0, 0) rotate(0); }
       50% { transform: translate(-20px, -20px) rotate(5deg); }
@@ -113,20 +107,19 @@
 </head>
 <body class="bg-gradient-to-b from-pink-50 to-white text-gray-800 font-sans">
   <div id="app">
-    <!-- Header with Glass Effect -->
+
     <header class="sticky top-0 z-50">
       <nav class="backdrop-blur-md bg-white/80 shadow-soft border-b border-pink-100">
         <div class="container mx-auto px-4">
           <div class="flex items-center justify-between h-16">
-            <!-- Logo -->
+
             <div
               @click="activeSection = 'home'"
               class="font-serif text-2xl font-bold text-primary cursor-pointer select-none"
             >
               SweetBites
             </div>
-            
-            <!-- Desktop Navigation -->
+
             <div class="hidden md:flex space-x-8 items-center font-medium">
               <button
                 @click="activeSection = 'home'"
@@ -142,7 +135,7 @@
                   class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
                 ></div>
               </button>
-              
+
               <button
                 @click="activeSection = 'products'"
                 class="relative px-3 py-2 transition-colors"
@@ -157,7 +150,7 @@
                   class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
                 ></div>
               </button>
-              
+
               <button
                 @click="activeSection = 'wishlist'"
                 class="relative px-3 py-2 transition-colors"
@@ -178,7 +171,7 @@
                   class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
                 ></div>
               </button>
-              
+
               <button
                 @click="cartOpen = true"
                 class="relative p-2 rounded-full hover:bg-pink-100 transition-colors"
@@ -191,7 +184,7 @@
                   {{ cartItemCount }}
                 </span>
               </button>
-              
+
               <button
                 v-if="user.logged_in"
                 @click="activeSection = 'orders'"
@@ -207,7 +200,7 @@
                   class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
                 ></div>
               </button>
-              
+
               <a
                 v-if="user.logged_in && user.is_admin"
                 href="/admin"
@@ -215,7 +208,7 @@
               >
                 Admin
               </a>
-              
+
               <a
                 v-if="!user.logged_in"
                 href="/login"
@@ -223,7 +216,7 @@
               >
                 <i data-lucide="user" class="h-5 w-5"></i>
               </a>
-              
+
               <a
                 v-if="user.logged_in"
                 href="/logout"
@@ -232,8 +225,7 @@
                 <i data-lucide="log-out" class="h-5 w-5"></i>
               </a>
             </div>
-            
-            <!-- Mobile Menu Button -->
+
             <div class="md:hidden">
               <button
                 @click="menuOpen = !menuOpen"
@@ -254,8 +246,7 @@
           </div>
         </div>
       </nav>
-      
-      <!-- Mobile Navigation Menu -->
+
       <transition name="fade">
         <div
           v-if="menuOpen"
@@ -272,7 +263,7 @@
             >
               Home
             </button>
-            
+
             <button
               @click="activeSection = 'products'; menuOpen = false"
               class="block w-full text-left px-3 py-2 rounded-md transition-colors"
@@ -283,7 +274,7 @@
             >
               Products
             </button>
-            
+
             <button
               @click="activeSection = 'wishlist'; menuOpen = false"
               class="block w-full text-left px-3 py-2 rounded-md transition-colors"
@@ -300,7 +291,7 @@
                 {{ wishlist.length }}
               </span>
             </button>
-            
+
             <button
               @click="cartOpen = true; menuOpen = false"
               class="block w-full text-left px-3 py-2 rounded-md transition-colors hover:bg-gray-100"
@@ -313,7 +304,7 @@
                 {{ cartItemCount }}
               </span>
             </button>
-            
+
             <button
               v-if="user.logged_in"
               @click="activeSection = 'orders'; menuOpen = false"
@@ -325,7 +316,7 @@
             >
               My Orders
             </button>
-            
+
             <a
               v-if="user.logged_in && user.is_admin"
               href="/admin"
@@ -333,7 +324,7 @@
             >
               Admin
             </a>
-            
+
             <a
               v-if="!user.logged_in"
               href="/login"
@@ -341,7 +332,7 @@
             >
               Login
             </a>
-            
+
             <a
               v-if="!user.logged_in"
               href="/register"
@@ -349,7 +340,7 @@
             >
               Register
             </a>
-            
+
             <a
               v-if="user.logged_in"
               href="/logout"
@@ -362,7 +353,6 @@
       </transition>
     </header>
 
-    <!-- Notification Toast System -->
     <div class="fixed top-4 right-4 z-50 space-y-2">
       <transition-group name="slide-up">
         <div
@@ -384,11 +374,10 @@
       </transition-group>
     </div>
 
-    <!-- Main Content -->
     <main>
-      <!-- HOME SECTION -->
+
       <section v-if="activeSection === 'home'">
-        <!-- Hero Section -->
+
         <div class="relative overflow-hidden bg-gradient-to-r from-rose-100 to-pink-200 pb-10 shadow-sm">
           <div class="container mx-auto px-4 pt-20 pb-24 relative z-10">
             <div class="text-center max-w-2xl mx-auto">
@@ -408,8 +397,7 @@
               </button>
             </div>
           </div>
-          
-          <!-- Floating Decorative Elements (optional) -->
+
           <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
             <div class="absolute top-[15%] left-[10%]">
               <div class="w-16 h-16 md:w-24 md:h-24 bg-white/20 backdrop-blur-md rounded-xl transform rotate-12 floating-1"></div>
@@ -426,13 +414,12 @@
           </div>
         </div>
 
-        <!-- Featured Products -->
         <div class="py-16 container mx-auto px-4">
           <div class="text-center mb-12">
             <h2 class="text-3xl font-serif font-bold">Our Best Sellers</h2>
             <div class="w-16 h-1 bg-primary mx-auto mt-4"></div>
           </div>
-          
+
           <div class="grid md:grid-cols-3 gap-8">
             <div
               v-for="product in featuredProducts"
@@ -450,11 +437,7 @@
                   @click.stop="toggleWishlist(product.id)"
                   class="absolute top-3 right-3 p-2 bg-white rounded-full shadow hover:bg-pink-50 transition-colors z-10"
                 >
-                  <i
-                    data-lucide="heart"
-                    :class="[ isInWishlist(product.id) ? 'fill-primary text-primary' : 'text-gray-400' ]"
-                    class="h-5 w-5"
-                  ></i>
+                <i class="bi" :class="isInWishlist(product.id) ? 'bi-heart-fill' : 'bi-heart'"></i>
                 </button>
                 <div class="absolute top-3 left-3">
                   <span
@@ -487,7 +470,7 @@
               </div>
             </div>
           </div>
-          
+
           <div class="text-center mt-12">
             <button
               @click="activeSection = 'products'"
@@ -499,7 +482,6 @@
           </div>
         </div>
 
-        <!-- Why Choose Us -->
         <div class="py-16 bg-gray-50">
           <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row items-center">
@@ -535,7 +517,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <div class="md:w-1/2 relative">
                 <div class="relative rounded-2xl overflow-hidden shadow-md-soft">
                   <img
@@ -543,7 +525,7 @@
                     alt="Quality treats"
                     class="w-full h-auto rounded-2xl"
                   />
-                  <!-- Decorative elements -->
+
                   <div class="absolute -top-4 -left-4 w-24 h-24 bg-rose-200 rounded-full opacity-70"></div>
                   <div class="absolute -bottom-4 -right-4 w-32 h-32 bg-pink-200 rounded-full opacity-70"></div>
                 </div>
@@ -552,7 +534,6 @@
           </div>
         </div>
 
-        <!-- Testimonials -->
         <div class="py-16 container mx-auto px-4">
           <div class="text-center mb-12">
             <h2 class="text-3xl font-serif font-bold">What Our Customers Say</h2>
@@ -581,14 +562,12 @@
         </div>
       </section>
 
-      <!-- PRODUCTS SECTION -->
       <section v-if="activeSection === 'products'" class="container mx-auto px-4 py-12">
         <div class="text-center mb-6">
           <h2 class="text-3xl font-serif font-bold">Our Products</h2>
           <div class="w-16 h-1 bg-primary mx-auto mt-4 mb-8"></div>
         </div>
-        
-        <!-- Search Bar -->
+
         <div class="relative max-w-md mx-auto mb-6">
           <i
             data-lucide="search"
@@ -602,8 +581,7 @@
                    focus:border-rose-300 focus:ring focus:ring-rose-200 focus:ring-opacity-50"
           />
         </div>
-        
-        <!-- Category Filters & Sort -->
+
         <div class="flex flex-wrap justify-center gap-3 mb-6">
           <button
             @click="currentFilter = 'all'"
@@ -617,7 +595,7 @@
           >
             All Categories
           </button>
-          
+
           <button
             v-for="category in categories"
             :key="category"
@@ -632,8 +610,7 @@
           >
             {{ category }}
           </button>
-          
-          <!-- Sort Dropdown -->
+
           <div class="relative group">
             <button
               class="px-4 py-2 rounded-full text-sm font-medium bg-white border border-gray-200
@@ -673,8 +650,7 @@
             </div>
           </div>
         </div>
-        
-        <!-- Products Grid -->
+
         <transition-group name="fade" tag="div" class="grid md:grid-cols-3 gap-8">
           <div
             v-for="product in filteredProducts"
@@ -702,11 +678,7 @@
                 @click.stop="toggleWishlist(product.id)"
                 :class="{ active: isInWishlist(product.id) }"
               >
-                <i
-                  data-lucide="heart"
-                  :class="[ isInWishlist(product.id) ? 'fill-primary text-primary' : 'text-gray-400' ]"
-                  class="h-5 w-5"
-                ></i>
+              <i class="bi" :class="isInWishlist(product.id) ? 'bi-heart-fill' : 'bi-heart'"></i>
               </button>
             </div>
             <div class="p-4 flex flex-col">
@@ -732,8 +704,7 @@
             </div>
           </div>
         </transition-group>
-        
-        <!-- Empty State -->
+
         <div v-if="filteredProducts.length === 0" class="text-center py-16">
           <i data-lucide="search" class="h-16 w-16 text-gray-300 mx-auto mb-4"></i>
           <h3 class="text-xl font-medium">No Products Found</h3>
@@ -747,7 +718,6 @@
         </div>
       </section>
 
-      <!-- WISHLIST SECTION -->
       <section
         v-if="activeSection === 'wishlist'"
         class="container mx-auto px-4 py-16"
@@ -756,7 +726,7 @@
           <h2 class="text-3xl font-serif font-bold">My Wishlist</h2>
           <div class="w-16 h-1 bg-primary mx-auto mt-4 mb-8"></div>
         </div>
-        
+
         <div
           v-if="!wishlistProducts.length"
           class="text-center py-16"
@@ -774,7 +744,7 @@
             Browse Products
           </button>
         </div>
-        
+
         <transition-group
           v-else
           name="fade"
@@ -806,10 +776,7 @@
                        transition-colors z-10 active"
                 @click.stop="toggleWishlist(product.id)"
               >
-                <i
-                  data-lucide="heart"
-                  class="h-5 w-5 fill-primary text-primary"
-                ></i>
+               <i class="bi" :class="isInWishlist(product.id) ? 'bi-heart-fill' : 'bi-heart'"></i>
               </button>
             </div>
             <div class="p-4 flex flex-col">
@@ -848,13 +815,12 @@
         </transition-group>
       </section>
 
-      <!-- ORDERS SECTION -->
       <section v-if="activeSection === 'orders'" class="container mx-auto px-4 py-16">
         <div class="text-center">
           <h2 class="text-3xl font-serif font-bold">My Orders</h2>
           <div class="w-16 h-1 bg-primary mx-auto mt-4 mb-8"></div>
         </div>
-        
+
         <div v-if="!user.logged_in" class="text-center py-16 max-w-md mx-auto">
           <i data-lucide="user" class="h-16 w-16 text-gray-300 mx-auto mb-4"></i>
           <h3 class="text-xl font-medium">Please Login to View Your Orders</h3>
@@ -876,14 +842,14 @@
             </a>
           </div>
         </div>
-        
+
         <div v-else-if="isLoadingOrders" class="text-center py-16">
           <div
             class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"
           ></div>
           <p class="text-gray-500 mt-4">Loading your orders...</p>
         </div>
-        
+
         <div v-else-if="!orders.length" class="text-center py-16">
           <i data-lucide="shopping-bag" class="h-16 w-16 text-gray-300 mx-auto mb-4"></i>
           <h3 class="text-xl font-medium">No Orders Found</h3>
@@ -895,7 +861,7 @@
             Start Shopping
           </button>
         </div>
-        
+
         <div v-else class="space-y-6 max-w-4xl mx-auto">
           <div
             v-for="order in orders"
@@ -923,7 +889,7 @@
                 <span class="font-semibold">${{ order.total.toFixed(2) }}</span>
               </div>
             </div>
-            
+
             <div class="p-4 md:p-6">
               <div class="grid md:grid-cols-3 gap-6">
                 <div class="md:col-span-2">
@@ -953,7 +919,7 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <div
                   class="border-t pt-4 md:pt-0 md:border-t-0 md:border-l md:pl-6"
                 >
@@ -996,7 +962,6 @@
         </div>
       </section>
 
-      <!-- CHECKOUT SECTION -->
       <section
         v-if="activeSection === 'checkout'"
         class="container mx-auto px-4 py-16 max-w-6xl"
@@ -1005,7 +970,7 @@
           <h2 class="text-3xl font-serif font-bold">Checkout</h2>
           <div class="w-16 h-1 bg-primary mx-auto mt-4"></div>
         </div>
-        
+
         <div
           v-if="!cart.length"
           class="text-center py-16 bg-white rounded-2xl shadow-md-soft"
@@ -1022,15 +987,15 @@
             Browse Products
           </button>
         </div>
-        
+
         <div v-else class="grid md:grid-cols-3 gap-8">
-          <!-- Customer Info -->
+
           <div class="md:col-span-2">
             <div class="bg-white rounded-2xl shadow-md-soft overflow-hidden">
               <div class="p-6 border-b border-gray-100">
                 <h3 class="text-xl font-medium">Customer Information</h3>
               </div>
-              
+
               <div class="p-6">
                 <form @submit.prevent="processCheckout">
                   <div class="mb-6">
@@ -1087,8 +1052,7 @@
                       required
                     ></textarea>
                   </div>
-                  
-                  <!-- Discount -->
+
                   <div class="mb-6">
                     <label
                       for="discount"
@@ -1125,8 +1089,7 @@
                       {{ discountMessage }}
                     </p>
                   </div>
-                  
-                  <!-- Shipping Method -->
+
                   <div class="mb-6">
                     <label class="block text-sm font-medium mb-2">
                       Shipping Method
@@ -1153,7 +1116,7 @@
                           ${{ standardShippingRate.toFixed(2) }}
                         </span>
                       </label>
-                      
+
                       <label
                         class="flex items-center justify-between
                                p-3 border rounded-lg cursor-pointer
@@ -1177,8 +1140,7 @@
                       </label>
                     </div>
                   </div>
-                  
-                  <!-- Payment Method Notice -->
+
                   <div class="mb-6">
                     <label class="block text-sm font-medium mb-2">
                       Payment Method
@@ -1206,8 +1168,7 @@
                       </p>
                     </div>
                   </div>
-                  
-                  <!-- Submit Button -->
+
                   <button
                     type="submit"
                     :disabled="isProcessingCheckout"
@@ -1252,7 +1213,6 @@
             </div>
           </div>
 
-          <!-- Order Summary -->
           <div class="md:col-span-1">
             <div class="bg-white rounded-2xl shadow-md-soft overflow-hidden sticky top-24">
               <div class="p-6 border-b border-gray-100">
@@ -1283,7 +1243,7 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <div class="mt-6 space-y-2">
                   <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Subtotal:</span>
@@ -1311,7 +1271,6 @@
       </section>
     </main>
 
-    <!-- Shopping Cart Slide-in -->
     <transition name="slide-right">
       <div v-if="cartOpen" class="fixed inset-0 z-50 overflow-hidden">
         <div
@@ -1334,7 +1293,7 @@
               <i data-lucide="x" class="h-6 w-6"></i>
             </button>
           </div>
-          
+
           <div class="flex-grow overflow-y-auto py-4 px-4">
             <div
               v-if="!cart.length"
@@ -1353,7 +1312,7 @@
                 Browse Products
               </button>
             </div>
-            
+
             <transition-group
               v-else
               name="slide-up"
@@ -1406,7 +1365,7 @@
               </div>
             </transition-group>
           </div>
-          
+
           <div
             v-if="cart.length > 0"
             class="border-t p-4 bg-gray-50 rounded-bl-3xl"
@@ -1442,7 +1401,7 @@
                 {{ discountMessage }}
               </p>
             </div>
-            
+
             <div class="space-y-2 mb-4">
               <div class="flex justify-between text-sm">
                 <span>Subtotal:</span>
@@ -1465,7 +1424,7 @@
                 <span>${{ cartTotal.toFixed(2) }}</span>
               </div>
             </div>
-            
+
             <div class="space-y-2">
               <button
                 @click="proceedToCheckout"
@@ -1486,8 +1445,7 @@
         </div>
       </div>
     </transition>
-    
-    <!-- Product Quick View Modal -->
+
     <transition name="fade">
       <div
         v-if="productInView"
@@ -1507,7 +1465,7 @@
           >
             <i data-lucide="x" class="h-6 w-6"></i>
           </button>
-          
+
           <div class="flex flex-col md:flex-row">
             <div class="md:w-1/2 relative overflow-hidden">
               <img
@@ -1547,7 +1505,7 @@
               <div class="text-2xl font-semibold text-primary mb-6">
                 ${{ productInView.price.toFixed(2) }}
               </div>
-              
+
               <div class="flex items-center space-x-3 mb-6">
                 <div class="flex items-center border rounded-xl overflow-hidden">
                   <button
@@ -1578,7 +1536,7 @@
                   Add to Cart
                 </button>
               </div>
-              
+
               <button
                 @click="toggleWishlist(productInView.id)"
                 :class="[
@@ -1588,11 +1546,7 @@
                     : 'border-gray-300 hover:bg-gray-100'
                 ]"
               >
-                <i
-                  data-lucide="heart"
-                  :class="[ isInWishlist(productInView.id) ? 'fill-primary' : '' ]"
-                  class="h-5 w-5 mr-2"
-                ></i>
+              <i class="bi" :class="isInWishlist(product.id) ? 'bi-heart-fill' : 'bi-heart'"></i>
                 {{ isInWishlist(productInView.id) ? 'Remove from Wishlist' : 'Add to Wishlist' }}
               </button>
             </div>
@@ -1600,8 +1554,7 @@
         </div>
       </div>
     </transition>
-    
-    <!-- Order Success Modal -->
+
     <transition name="fade">
       <div
         v-if="orderSuccessModal"
@@ -1626,7 +1579,7 @@
             <p class="text-gray-600 mb-6">
               Thank you for your order!
             </p>
-            
+
             <div class="bg-gray-100 rounded-xl p-4 mb-6 text-left">
               <p class="text-center font-semibold mb-2">
                 Order #{{ lastOrderId }}
@@ -1635,7 +1588,7 @@
                 This is a demo store. No actual payment has been processed.
               </p>
             </div>
-            
+
             <div class="flex space-x-3">
               <button
                 @click="orderSuccessModal = false"
@@ -1658,7 +1611,6 @@
     </transition>
   </div>
 
-  <!-- Vue App Logic -->
   <script>
     const { createApp, ref, computed, onMounted, watch } = Vue;
 
@@ -1677,7 +1629,7 @@
         const categories = ref([]);
         const orders = ref([]);
         const toasts = ref([]);
-        const productInView = ref(null);
+        const productInView = ref(
         const modalQuantity = ref(1);
         const discountCode = ref('');
         const discountMessage = ref('');
@@ -1688,7 +1640,7 @@
         const expressShippingRate = ref(14.99);
         const isLoadingOrders = ref(false);
         const isProcessingCheckout = ref(false);
-        const lastOrderId = ref(null);
+        const lastOrderId = ref(
         const orderSuccessModal = ref(false);
 
         const checkoutInfo = ref({
@@ -1723,7 +1675,7 @@
             description: 'Straight to your doorstep with care and precision'
           }
         ];
-        
+
         // Testimonials
         const testimonials = [
           {
@@ -1747,7 +1699,7 @@
         const loadStoredData = () => {
           const storedCart = localStorage.getItem('cartItems');
           const storedWishlist = localStorage.getItem('wishlistItems');
-          
+
           if (storedCart) {
             try {
               cart.value = JSON.parse(storedCart);
@@ -1756,7 +1708,7 @@
               cart.value = [];
             }
           }
-          
+
           if (storedWishlist) {
             try {
               wishlist.value = JSON.parse(storedWishlist);
@@ -1804,7 +1756,7 @@
             const response = await fetch('/api/current_user');
             if (response.ok) {
               user.value = await response.json();
-              
+
               // Prefill checkout info with user email if logged in
               if (user.value.logged_in) {
                 checkoutInfo.value.customer_email = user.value.email;
@@ -1950,7 +1902,7 @@
           saveCart();
           updateShippingCost();
           showNotification(`${qty} ${product.name} added to cart!`);
-          productInView.value = null;
+          productInView.value = 
           modalQuantity.value = 1;
         };
         const removeFromCart = (index) => {
@@ -2066,7 +2018,7 @@
                 price: item.price,
                 quantity: item.quantity
               })),
-              discount_code: discountValid.value ? discountCode.value : null,
+              discount_code: discountValid.value ? discountCode.value : 
               shipping_cost: calculatedShippingCost.value,
               customer_name: checkoutInfo.value.customer_name,
               customer_email: checkoutInfo.value.customer_email,
@@ -2167,6 +2119,6 @@
       navigator.serviceWorker.register("/service-worker.js")
     }
   </script>
-  
+
 </body>
 </html>
