@@ -6,7 +6,7 @@
   <title>SweetBites - Premium Treats</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-
+  <!-- We still load Lucide for other icons, but not for the wishlist heart -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,7 +45,6 @@
   </script>
 
   <style>
-
     .fade-enter-active,
     .fade-leave-active {
       transition: opacity 0.3s ease;
@@ -376,6 +375,7 @@
 
     <main>
 
+      <!-- HOME SECTION -->
       <section v-if="activeSection === 'home'">
 
         <div class="relative overflow-hidden bg-gradient-to-r from-rose-100 to-pink-200 pb-10 shadow-sm">
@@ -414,6 +414,7 @@
           </div>
         </div>
 
+        <!-- BEST SELLERS -->
         <div class="py-16 container mx-auto px-4">
           <div class="text-center mb-12">
             <h2 class="text-3xl font-serif font-bold">Our Best Sellers</h2>
@@ -433,12 +434,29 @@
                   class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105 cursor-pointer"
                   @click="showProductDetails(product)"
                 />
+
+                <!-- Inline Heart Icon -->
                 <button
                   @click.stop="toggleWishlist(product.id)"
                   class="absolute top-3 right-3 p-2 bg-white rounded-full shadow hover:bg-pink-50 transition-colors z-10"
                 >
-                <i class="bi" :class="isInWishlist(product.id) ? 'bi-heart-fill' : 'bi-heart'"></i>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    class="h-5 w-5"
+                    :class="isInWishlist(product.id) 
+                      ? 'text-pink-500 fill-current' 
+                      : 'text-gray-400 fill-current'"
+                  >
+                    <path d="M12.1 21.29l-.1.1a1 1 0 01-1.4 0l-.1-.1C5.4 16.36 2
+                      12.28 2 8.5 2 5.37 4.37 3 7.5 3c1.74 0 
+                      3.41.81 4.5 2.09A5.97 5.97 0 0116.5 3C19.63 
+                      3 22 5.37 22 8.5c0 3.78-3.4 7.86-8.5 
+                      12.79z">
+                    </path>
+                  </svg>
                 </button>
+
                 <div class="absolute top-3 left-3">
                   <span
                     v-if="product.category"
@@ -459,7 +477,9 @@
                   {{ product.description }}
                 </p>
                 <div class="mt-4 flex items-center justify-between">
-                  <span class="text-primary font-semibold">${{ product.price.toFixed(2) }}</span>
+                  <span class="text-primary font-semibold">
+                    ${{ product.price.toFixed(2) }}
+                  </span>
                   <button
                     @click="addToCart(product)"
                     class="px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-all hover:scale-105 active:scale-95"
@@ -482,11 +502,14 @@
           </div>
         </div>
 
+        <!-- FEATURES -->
         <div class="py-16 bg-gray-50">
           <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row items-center">
               <div class="md:w-1/2 md:pr-10 mb-10 md:mb-0">
-                <h2 class="text-3xl font-serif font-bold mb-6">Why Choose SweetBites?</h2>
+                <h2 class="text-3xl font-serif font-bold mb-6">
+                  Why Choose SweetBites?
+                </h2>
                 <div class="space-y-4">
                   <div
                     class="flex items-start"
@@ -511,8 +534,12 @@
                       </div>
                     </div>
                     <div class="ml-4">
-                      <h4 class="text-lg font-medium">{{ feature.title }}</h4>
-                      <p class="text-gray-600 mt-1">{{ feature.description }}</p>
+                      <h4 class="text-lg font-medium">
+                        {{ feature.title }}
+                      </h4>
+                      <p class="text-gray-600 mt-1">
+                        {{ feature.description }}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -534,6 +561,7 @@
           </div>
         </div>
 
+        <!-- TESTIMONIALS -->
         <div class="py-16 container mx-auto px-4">
           <div class="text-center mb-12">
             <h2 class="text-3xl font-serif font-bold">What Our Customers Say</h2>
@@ -555,13 +583,16 @@
                   class="h-5 w-5"
                 ></i>
               </div>
-              <p class="text-gray-700 italic mb-4">"{{ testimonial.comment }}"</p>
+              <p class="text-gray-700 italic mb-4">
+                "{{ testimonial.comment }}"
+              </p>
               <div class="font-medium">{{ testimonial.name }}</div>
             </div>
           </div>
         </div>
       </section>
 
+      <!-- PRODUCTS SECTION -->
       <section v-if="activeSection === 'products'" class="container mx-auto px-4 py-12">
         <div class="text-center mb-6">
           <h2 class="text-3xl font-serif font-bold">Our Products</h2>
@@ -672,13 +703,28 @@
                        group-hover:scale-105 cursor-pointer"
                 @click="showProductDetails(product)"
               />
+
+              <!-- Inline Heart Icon for main product listing -->
               <button
                 class="absolute top-3 right-3 p-2 bg-white rounded-full shadow hover:bg-pink-50
                        transition-colors z-10"
                 @click.stop="toggleWishlist(product.id)"
-                :class="{ active: isInWishlist(product.id) }"
               >
-              <i class="bi" :class="isInWishlist(product.id) ? 'bi-heart-fill' : 'bi-heart'"></i>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  class="h-5 w-5"
+                  :class="isInWishlist(product.id) 
+                    ? 'text-pink-500 fill-current' 
+                    : 'text-gray-400 fill-current'"
+                >
+                  <path d="M12.1 21.29l-.1.1a1 1 0 01-1.4 0l-.1-.1C5.4 16.36 2
+                    12.28 2 8.5 2 5.37 4.37 3 7.5 3c1.74 0 
+                    3.41.81 4.5 2.09A5.97 5.97 0 0116.5 3C19.63 
+                    3 22 5.37 22 8.5c0 3.78-3.4 7.86-8.5 
+                    12.79z">
+                  </path>
+                </svg>
               </button>
             </div>
             <div class="p-4 flex flex-col">
@@ -718,6 +764,7 @@
         </div>
       </section>
 
+      <!-- WISHLIST SECTION -->
       <section
         v-if="activeSection === 'wishlist'"
         class="container mx-auto px-4 py-16"
@@ -731,6 +778,7 @@
           v-if="!wishlistProducts.length"
           class="text-center py-16"
         >
+          <!-- You can swap out the empty heart icon if you want as well -->
           <i data-lucide="heart" class="h-16 w-16 text-gray-300 mx-auto mb-4"></i>
           <h3 class="text-xl font-medium">Your Wishlist is Empty</h3>
           <p class="text-gray-500 mt-2">
@@ -771,14 +819,31 @@
                        group-hover:scale-105 cursor-pointer"
                 @click="showProductDetails(product)"
               />
+
+              <!-- Inline Heart Icon in wishlist -->
               <button
                 class="absolute top-3 right-3 p-2 bg-white rounded-full shadow hover:bg-pink-50
-                       transition-colors z-10 active"
+                       transition-colors z-10"
                 @click.stop="toggleWishlist(product.id)"
               >
-               <i class="bi" :class="isInWishlist(product.id) ? 'bi-heart-fill' : 'bi-heart'"></i>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  class="h-5 w-5"
+                  :class="isInWishlist(product.id) 
+                    ? 'text-pink-500 fill-current' 
+                    : 'text-gray-400 fill-current'"
+                >
+                  <path d="M12.1 21.29l-.1.1a1 1 0 01-1.4 0l-.1-.1C5.4 16.36 2
+                    12.28 2 8.5 2 5.37 4.37 3 7.5 3c1.74 0 
+                    3.41.81 4.5 2.09A5.97 5.97 0 0116.5 3C19.63 
+                    3 22 5.37 22 8.5c0 3.78-3.4 7.86-8.5 
+                    12.79z">
+                  </path>
+                </svg>
               </button>
             </div>
+
             <div class="p-4 flex flex-col">
               <h3
                 class="font-medium text-lg cursor-pointer hover:text-primary transition-colors"
@@ -815,6 +880,7 @@
         </transition-group>
       </section>
 
+      <!-- ORDERS SECTION -->
       <section v-if="activeSection === 'orders'" class="container mx-auto px-4 py-16">
         <div class="text-center">
           <h2 class="text-3xl font-serif font-bold">My Orders</h2>
@@ -870,23 +936,29 @@
           >
             <div class="p-4 border-b border-gray-100 flex justify-between items-center">
               <div>
-                <span class="font-semibold">Order #{{ order.id }}</span>
-                <div class="text-sm text-gray-500">{{ formatDate(order.created_at) }}</div>
+                <span class="font-semibold">
+                  Order #{{ order.id }}
+                </span>
+                <div class="text-sm text-gray-500">
+                  {{ formatDate(order.created_at) }}
+                </div>
               </div>
               <div class="flex items-center space-x-3">
                 <span
                   :class="[
                     'px-3 py-1 rounded-full text-xs font-medium',
                     order.status === 'pending' ? 'bg-yellow-100 text-yellow-800'
-                    : order.status === 'processing' ? 'bg-blue-100 text-blue-800'
-                    : order.status === 'shipped' ? 'bg-indigo-100 text-indigo-800'
-                    : order.status === 'delivered' ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
+                      : order.status === 'processing' ? 'bg-blue-100 text-blue-800'
+                      : order.status === 'shipped' ? 'bg-indigo-100 text-indigo-800'
+                      : order.status === 'delivered' ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800'
                   ]"
                 >
                   {{ capitalize(order.status) }}
                 </span>
-                <span class="font-semibold">${{ order.total.toFixed(2) }}</span>
+                <span class="font-semibold">
+                  ${{ order.total.toFixed(2) }}
+                </span>
               </div>
             </div>
 
@@ -910,10 +982,16 @@
                         />
                       </div>
                       <div class="ml-4 flex-grow">
-                        <h5 class="font-medium">{{ item.product_name }}</h5>
+                        <h5 class="font-medium">
+                          {{ item.product_name }}
+                        </h5>
                         <div class="flex justify-between text-sm">
-                          <span class="text-gray-500">Qty: {{ item.quantity }}</span>
-                          <span>${{ (item.price * item.quantity).toFixed(2) }}</span>
+                          <span class="text-gray-500">
+                            Qty: {{ item.quantity }}
+                          </span>
+                          <span>
+                            ${{ (item.price * item.quantity).toFixed(2) }}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -962,6 +1040,7 @@
         </div>
       </section>
 
+      <!-- CHECKOUT SECTION -->
       <section
         v-if="activeSection === 'checkout'"
         class="container mx-auto px-4 py-16 max-w-6xl"
@@ -989,7 +1068,6 @@
         </div>
 
         <div v-else class="grid md:grid-cols-3 gap-8">
-
           <div class="md:col-span-2">
             <div class="bg-white rounded-2xl shadow-md-soft overflow-hidden">
               <div class="p-6 border-b border-gray-100">
@@ -1271,6 +1349,7 @@
       </section>
     </main>
 
+    <!-- CART DRAWER -->
     <transition name="slide-right">
       <div v-if="cartOpen" class="fixed inset-0 z-50 overflow-hidden">
         <div
@@ -1446,6 +1525,7 @@
       </div>
     </transition>
 
+    <!-- PRODUCT DETAIL MODAL -->
     <transition name="fade">
       <div
         v-if="productInView"
@@ -1537,6 +1617,7 @@
                 </button>
               </div>
 
+              <!-- Inline Heart Icon in the modal -->
               <button
                 @click="toggleWishlist(productInView.id)"
                 :class="[
@@ -1546,7 +1627,21 @@
                     : 'border-gray-300 hover:bg-gray-100'
                 ]"
               >
-              <i class="bi" :class="isInWishlist(product.id) ? 'bi-heart-fill' : 'bi-heart'"></i>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  class="h-5 w-5 mr-2"
+                  :class="isInWishlist(productInView.id) 
+                    ? 'fill-current text-primary' 
+                    : 'fill-current text-gray-400'"
+                >
+                  <path d="M12.1 21.29l-.1.1a1 1 0 01-1.4 0l-.1-.1C5.4 16.36 2 
+                    12.28 2 8.5 2 5.37 4.37 3 7.5 3c1.74 0 
+                    3.41.81 4.5 2.09A5.97 5.97 0 0116.5 3C19.63 
+                    3 22 5.37 22 8.5c0 3.78-3.4 7.86-8.5 
+                    12.79z">
+                  </path>
+                </svg>
                 {{ isInWishlist(productInView.id) ? 'Remove from Wishlist' : 'Add to Wishlist' }}
               </button>
             </div>
@@ -1555,6 +1650,7 @@
       </div>
     </transition>
 
+    <!-- ORDER SUCCESS MODAL -->
     <transition name="fade">
       <div
         v-if="orderSuccessModal"
@@ -1629,8 +1725,11 @@
         const categories = ref([]);
         const orders = ref([]);
         const toasts = ref([]);
-        const productInView = ref(
+
+        // Fixing those incomplete refs:
+        const productInView = ref(null); 
         const modalQuantity = ref(1);
+
         const discountCode = ref('');
         const discountMessage = ref('');
         const discountValid = ref(false);
@@ -1640,7 +1739,7 @@
         const expressShippingRate = ref(14.99);
         const isLoadingOrders = ref(false);
         const isProcessingCheckout = ref(false);
-        const lastOrderId = ref(
+        const lastOrderId = ref(null);
         const orderSuccessModal = ref(false);
 
         const checkoutInfo = ref({
@@ -1789,7 +1888,9 @@
         };
         const truncateText = (text, maxLength) => {
           if (!text) return '';
-          return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+          return text.length > maxLength
+            ? text.substring(0, maxLength) + '...'
+            : text;
         };
         const formatDate = (dateString) => {
           if (!dateString) return '';
@@ -1845,13 +1946,18 @@
         });
         const wishlistProducts = computed(() => {
           // Filter products that are in the wishlist
-          return products.value.filter(product => wishlist.value.includes(product.id));
+          return products.value.filter(product =>
+            wishlist.value.includes(product.id)
+          );
         });
         const cartItemCount = computed(() => {
           return cart.value.reduce((sum, item) => sum + item.quantity, 0);
         });
         const cartSubtotal = computed(() => {
-          return cart.value.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+          return cart.value.reduce(
+            (sum, item) => sum + (item.price * item.quantity),
+            0
+          );
         });
         const calculatedShippingCost = computed(() => {
           return checkoutInfo.value.shipping_method === 'standard'
@@ -1862,7 +1968,8 @@
           return cartSubtotal.value - discountAmount.value + shippingCost.value;
         });
         const checkoutTotal = computed(() => {
-          return cartSubtotal.value - discountAmount.value + calculatedShippingCost.value;
+          return cartSubtotal.value - discountAmount.value
+            + calculatedShippingCost.value;
         });
 
         // Notification system
@@ -1902,7 +2009,7 @@
           saveCart();
           updateShippingCost();
           showNotification(`${qty} ${product.name} added to cart!`);
-          productInView.value = 
+          productInView.value = null;
           modalQuantity.value = 1;
         };
         const removeFromCart = (index) => {
@@ -1927,9 +2034,10 @@
           }
         };
         const updateShippingCost = () => {
-          shippingCost.value = cartSubtotal.value >= 50
-            ? 0
-            : standardShippingRate.value;
+          shippingCost.value =
+            cartSubtotal.value >= 50
+              ? 0
+              : standardShippingRate.value;
         };
 
         // Wishlist
@@ -1944,7 +2052,8 @@
           }
           saveWishlist();
         };
-        const isInWishlist = (productId) => wishlist.value.includes(productId);
+        const isInWishlist = (productId) =>
+          wishlist.value.includes(productId);
 
         // Product Modal
         const showProductDetails = (product) => {
@@ -1980,7 +2089,8 @@
                 discountAmount.value = cartSubtotal.value * (result.amount / 100);
                 discountMessage.value = `${result.amount}% discount applied!`;
               } else if (result.type === 'flat') {
-                discountAmount.value = Math.min(result.amount, cartSubtotal.value);
+                discountAmount.value =
+                  Math.min(result.amount, cartSubtotal.value);
                 discountMessage.value = `$${result.amount.toFixed(2)} discount applied!`;
               }
             } else {
@@ -2018,7 +2128,7 @@
                 price: item.price,
                 quantity: item.quantity
               })),
-              discount_code: discountValid.value ? discountCode.value : 
+              discount_code: discountValid.value ? discountCode.value : '',
               shipping_cost: calculatedShippingCost.value,
               customer_name: checkoutInfo.value.customer_name,
               customer_email: checkoutInfo.value.customer_email,
@@ -2043,11 +2153,17 @@
                 fetchOrders();
               }
             } else {
-              showNotification(result.error || 'Error processing your order. Please try again.', 'error');
+              showNotification(
+                result.error || 'Error processing your order. Please try again.',
+                'error'
+              );
             }
           } catch (error) {
             console.error('Error processing checkout:', error);
-            showNotification('Error processing your order. Please try again.', 'error');
+            showNotification(
+              'Error processing your order. Please try again.',
+              'error'
+            );
           } finally {
             isProcessingCheckout.value = false;
           }
@@ -2064,10 +2180,12 @@
           fetchCategories();
           fetchCurrentUser();
           updateShippingCost();
-          lucide.createIcons(); // Initialize Lucide
+          // Initialize Lucide for the icons that remain
+          lucide.createIcons();
         });
         watch(cartSubtotal, () => {
           updateShippingCost();
+          // If discount is percentage-based, recalc discount when subtotal changes
           if (discountValid.value && discountMessage.value.includes('%')) {
             const percent = parseFloat(discountMessage.value);
             discountAmount.value = cartSubtotal.value * (percent / 100);
@@ -2089,32 +2207,71 @@
 
         return {
           // State
-          activeSection, menuOpen, cartOpen,
-          products, cart, wishlist, searchQuery,
-          currentFilter, sortOrder, categories,
-          orders, user, toasts, productInView,
-          modalQuantity, discountCode, discountMessage,
-          discountValid, discountAmount, shippingCost,
-          standardShippingRate, expressShippingRate,
-          checkoutInfo, isLoadingOrders, isProcessingCheckout,
-          lastOrderId, orderSuccessModal, features, testimonials,
+          activeSection,
+          menuOpen,
+          cartOpen,
+          products,
+          cart,
+          wishlist,
+          searchQuery,
+          currentFilter,
+          sortOrder,
+          categories,
+          orders,
+          user,
+          toasts,
+          productInView,
+          modalQuantity,
+          discountCode,
+          discountMessage,
+          discountValid,
+          discountAmount,
+          shippingCost,
+          standardShippingRate,
+          expressShippingRate,
+          checkoutInfo,
+          isLoadingOrders,
+          isProcessingCheckout,
+          lastOrderId,
+          orderSuccessModal,
+          features,
+          testimonials,
 
           // Computed
-          filteredProducts, featuredProducts,
-          wishlistProducts, cartItemCount, cartSubtotal,
-          cartTotal, checkoutTotal, calculatedShippingCost,
+          filteredProducts,
+          featuredProducts,
+          wishlistProducts,
+          cartItemCount,
+          cartSubtotal,
+          cartTotal,
+          checkoutTotal,
+          calculatedShippingCost,
 
           // Methods
-          getProductImage, truncateText, formatDate,
-          capitalize, showNotification, removeToast,
-          addToCart, addToCartWithQuantity, removeFromCart,
-          increaseQuantity, decreaseQuantity, updateShippingCost,
-          toggleWishlist, isInWishlist, showProductDetails,
-          resetFilters, applyDiscount, proceedToCheckout,
-          processCheckout, viewOrders
+          getProductImage,
+          truncateText,
+          formatDate,
+          capitalize,
+          showNotification,
+          removeToast,
+          addToCart,
+          addToCartWithQuantity,
+          removeFromCart,
+          increaseQuantity,
+          decreaseQuantity,
+          updateShippingCost,
+          toggleWishlist,
+          isInWishlist,
+          showProductDetails,
+          resetFilters,
+          applyDiscount,
+          proceedToCheckout,
+          processCheckout,
+          viewOrders
         };
       }
     }).mount('#app');
+
     if("serviceWorker" in navigator){
       navigator.serviceWorker.register("/service-worker.js")
     }
