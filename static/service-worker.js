@@ -1,166 +1,153 @@
-// service-worker.js
+// SweetBites Service Worker
 
 const CACHE_NAME = 'sweetbites-cache-v1';
-const OFFLINE_URL = '/offline.html';
+const OFFLINE_PAGE = '/offline.html';
 
+// Assets to cache immediately when the service worker installs
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/offline.html',
+  OFFLINE_PAGE,
   'https://cdn.tailwindcss.com',
   'https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js',
   'https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js',
-  'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap'
+  'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap',
+
 ];
 
-// Install event - cache assets
+// Install event - caches the specified assets when the service worker is installed
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Service Worker: Caching files');
+        console.log('Caching pre-defined assets');
         return cache.addAll(ASSETS_TO_CACHE);
       })
-      .then(() => self.skipWaiting())
+      .then(() => {
+        // Skip waiting forces the waiting service worker to become the active service worker
+        return self.skipWaiting();
+      })
   );
 });
 
-// Activate event - clean up old caches
+// Activate event - cleanup old caches when a new service worker activates
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Service Worker: Clearing old cache');
+    caches.keys()
+      .then(cacheNames => {
+        return Promise.all(
+          cacheNames.filter(cacheName => {
+            return cacheName !== CACHE_NAME;
+          }).map(cacheName => {
+            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+          })
+        );
+      })
+      .then(() => {
+        // Claim control over all clients within scope immediately
+        // Rather than waiting for reload
+        return self.clients.claim();
+      })
   );
 });
 
-// Fetch event - handle offline access
+// Fetch event - serve from cache first, then network with cache update for non-API routes
 self.addEventListener('fetch', event => {
   // Skip cross-origin requests
-  if (event.request.url.startsWith(self.location.origin) || 
-      event.request.url.includes('cdn.jsdelivr.net') ||
-      event.request.url.includes('fonts.googleapis.com')) {
+  if (!event.request.url.startsWith(self.location.origin) && 
+      !event.request.url.startsWith('https://cdn.')) {
+    return;
+  }
+
+  // Handle API requests differently
+  if (event.request.url.includes('/api/')) {
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => {
+          // If API call fails, return a custom JSON response
+          return new Response(
+            JSON.stringify({ 
+              error: 'You are currently offline.',
+              offline: true
+            }),
+            { 
+              headers: { 'Content-Type': 'application/json' } 
+            }
+          );
+        })
+    );
+    return;
+  }
+
+  // Handle HTML navigation requests 
+  if (event.request.mode === 'navigate' || 
+      (event.request.method === 'GET' && 
+       event.request.headers.get('accept').includes('text/html'))) {
     
-    // Special handling for API requests
-    if (event.request.url.includes('/api/')) {
-      // Network first strategy for API calls
-      event.respondWith(
-        fetch(event.request)
-          .catch(error => {
-            console.log('Service Worker: Network request failed, serving cached response');
-            return caches.match(event.request)
-              .then(cachedResponse => {
-                if (cachedResponse) {
-                  return cachedResponse;
-                }
-                if (event.request.headers.get('accept').includes('application/json')) {
-                  return new Response(JSON.stringify({ 
-                    error: 'You are offline. Please check your connection.'
-                  }), {
-                    headers: { 'Content-Type': 'application/json' }
-                  });
-                }
-                // For any other type, go to offline page
-                return caches.match(OFFLINE_URL);
-              });
-          })
-      );
-    } else {
-      // Cache first strategy for static assets
-      event.respondWith(
-        caches.match(event.request)
-          .then(cachedResponse => {
-            // Return cached response if available
-            if (cachedResponse) {
-              return cachedResponse;
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => {
+          // If navigation fails due to being offline, serve the offline page
+          return caches.match(OFFLINE_PAGE);
+        })
+    );
+    return;
+  }
+
+  // For all other requests (CSS, JS, images, etc)
+  event.respondWith(
+    caches.match(event.request)
+      .then(cachedResponse => {
+        // Return cached version if available
+        if (cachedResponse) {
+          // Fetch an updated version in the background to cache for next time
+          fetch(event.request)
+            .then(response => {
+              // Only cache valid responses
+              if (response && response.status === 200) {
+                caches.open(CACHE_NAME)
+                  .then(cache => cache.put(event.request, response));
+              }
+            })
+            .catch(() => {/* Silently fail background fetch */});
+          
+          return cachedResponse;
+        }
+
+        // No cached version, try network
+        return fetch(event.request)
+          .then(response => {
+            if (!response || response.status !== 200) {
+              return response;
             }
 
-            // Otherwise try to fetch from network
-            return fetch(event.request)
-              .then(response => {
-                // Don't cache if response was not ok
-                if (!response.ok) {
-                  return response;
-                }
-                
-                // Clone the response before using it
-                const responseToCache = response.clone();
-                
-                // Save new responses in cache
-                caches.open(CACHE_NAME)
-                  .then(cache => {
-                    cache.put(event.request, responseToCache);
-                  });
-                  
-                return response;
-              })
-              .catch(error => {
-                // If no internet connection, serve the offline page
-                return caches.match(OFFLINE_URL);
+            // Clone the response as it can only be consumed once
+            const responseToCache = response.clone();
+            
+            // Cache for next time
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, responseToCache);
               });
+
+            return response;
           })
-      );
-    }
-  }
+          .catch(error => {
+            // For image requests, you might want to return a placeholder
+            if (event.request.url.match(/\.(jpg|jpeg|png|gif|svg)$/)) {
+              return caches.match('/images/products/placeholder.jpg');
+            }
+            
+            throw error;
+          });
+      })
+  );
 });
 
-// Sync event for background data
-self.addEventListener('sync', event => {
-  if (event.tag === 'sync-cart') {
-    event.waitUntil(syncCart());
-  } else if (event.tag === 'sync-orders') {
-    event.waitUntil(syncOrders());
+// Handle messages from the main thread
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
   }
 });
-
-// Background sync functions
-async function syncCart() {
-  const db = await openDatabase();
-  const pendingCartChanges = await db.getAll('pendingCartChanges');
-  
-  if (pendingCartChanges.length > 0) {
-    // Process pending cart changes when back online
-    // This would normally send to a real API
-    console.log('Syncing pending cart changes:', pendingCartChanges);
-    
-    // After successful sync, clear pending changes
-    const tx = db.transaction('pendingCartChanges', 'readwrite');
-    await tx.objectStore('pendingCartChanges').clear();
-  }
-}
-
-async function syncOrders() {
-  const db = await openDatabase();
-  const pendingOrders = await db.getAll('pendingOrders');
-  
-  if (pendingOrders.length > 0) {
-    // Process pending orders when back online
-    console.log('Syncing pending orders:', pendingOrders);
-    
-    // After successful sync, clear pending orders
-    const tx = db.transaction('pendingOrders', 'readwrite');
-    await tx.objectStore('pendingOrders').clear();
-  }
-}
-
-function openDatabase() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open('SweetBitesOfflineDB', 1);
-    
-    request.onupgradeneeded = event => {
-      const db = event.target.result;
-      db.createObjectStore('pendingCartChanges', { keyPath: 'id', autoIncrement: true });
-      db.createObjectStore('pendingOrders', { keyPath: 'id', autoIncrement: true });
-    };
-    
-    request.onsuccess = event => resolve(event.target.result);
-    request.onerror = event => reject(event.target.error);
-  });
-}
