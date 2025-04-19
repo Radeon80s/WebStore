@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SweetBites - No Internet</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom, #fdf2f8, #ffffff);
+      min-height: 100vh;
+    }
+    
+    h1, h2, h3 {
+      font-family: 'Playfair Display', serif;
+    }
+    
+    .primary-color {
+      color: #F43F5E;
+    }
+    
+    .primary-bg {
+      background-color: #F43F5E;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .floating {
+      animation: float 3s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mx-auto px-4 py-12">
+    <div class="text-center">
+      <h1 class="font-serif text-3xl font-bold primary-color mb-4">SweetBites</h1>
+      <div class="w-16 h-1 bg-pink-500 mx-auto mb-6"></div>
+      
+      <div class="mt-8 max-w-md mx-auto bg-white p-8 rounded-2xl shadow-lg">
+        <div class="floating mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3m8.293 8.293l1.414 1.414" />
+          </svg>
+        </div>
+        
+        <h2 class="text-2xl font-serif font-medium mt-4">You're Offline</h2>
+        <p class="text-gray-600 mt-3">
+          It looks like you've lost your internet connection. Some features may not be available while you're offline.
+        </p>
+        
+        <div class="mt-8 space-y-4">
+          <button id="retry-button" class="w-full py-3 primary-bg text-white rounded-full font-medium hover:bg-pink-600 transition-colors">
+            Try Again
+          </button>
+          
+          <div class="text-sm text-gray-500 mt-4">
+            <p class="mb-2">While you're offline, you can still:</p>
+            <ul class="list-disc pl-5 text-left">
+              <li>View previously loaded products</li>
+              <li>See your shopping cart</li>
+              <li>Check your wishlist</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-8 text-sm text-gray-500">
+        <p>Your cart and wishlist items will be saved when offline.</p>
+        <p>Changes will sync automatically when you're back online.</p>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    document.getElementById('retry-button').addEventListener('click', function() {
+      // Check if we're back online before reloading
+      if (navigator.onLine) {
+        window.location.reload();
+      } else {
+        alert("You're still offline. Please check your connection and try again.");
+      }
+    });
+    
+    // Check if we come back online automatically
+    window.addEventListener('online', function() {
+      document.getElementById('retry-button').innerHTML = 'Connection restored! Click to reload';
+      document.getElementById('retry-button').classList.add('bg-green-500');
+      document.getElementById('retry-button').classList.remove('primary-bg');
+    });
+  </script>
+</body>
+</html>
