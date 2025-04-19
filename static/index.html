@@ -36,8 +36,8 @@
             'md-soft': '0 8px 20px rgba(0,0,0,0.06)'
           },
           colors: {
-            'primary': '#F43F5E',
-            'primary-hover': '#E11D48',
+            'primary': '#F43F5E', // rose-500 as 'primary'
+            'primary-hover': '#E11D48', // rose-600
           }
         }
       }
@@ -102,88 +102,10 @@
     .floating-4 {
       animation: float-4 9s infinite ease-in-out;
     }
-
-    @keyframes highlight-pulse {
-      0%, 100% { background-color: transparent; }
-      50% { background-color: rgba(244, 63, 94, 0.1); }
-    }
-    .item-highlight {
-      animation: highlight-pulse 1s ease-in-out;
-    }
-
-    @media (max-width: 768px) {
-      button, 
-      [role="button"],
-      a.button,
-      input[type="button"],
-      input[type="submit"] {
-        min-height: 44px;
-        min-width: 44px;
-        padding: 0.5rem 1rem;
-      }
-      
-      .touch-feedback:active {
-        opacity: 0.7;
-        transform: scale(0.98) !important;
-        transition: transform 0.1s, opacity 0.1s;
-      }
-      
-      .card-item {
-        -webkit-tap-highlight-color: transparent;
-      }
-      
-      .is-mobile .hover\:scale-105:hover,
-      .is-mobile .hover\:-translate-y-2:hover,
-      .is-mobile .hover\:bg-primary-hover:hover {
-        transform: none !important;
-        background-color: inherit !important;
-      }
-      
-      .is-mobile .active\:scale-95:active {
-        transform: scale(0.98) !important;
-      }
-      
-      .is-mobile .rounded-full {
-        border-radius: 50px !important;
-      }
-      
-      .is-mobile .modal-container, 
-      .is-mobile .cart-sidebar,
-      .is-mobile .fixed-header {
-        z-index: 9999 !important;
-      }
-    }
   </style>
 </head>
 <body class="bg-gradient-to-b from-pink-50 to-white text-gray-800 font-sans">
   <div id="app">
-    <!-- Loading state for initial product loading -->
-    <div v-if="isLoadingProducts" class="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center">
-      <div class="text-center">
-        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
-        <p class="mt-4 text-gray-600">Loading SweetBites...</p>
-      </div>
-    </div>
-
-    <!-- Connection error state -->
-    <div 
-      v-if="connectionError" 
-      class="fixed inset-x-0 top-16 p-4 bg-red-100 text-red-800 shadow-md z-50"
-    >
-      <div class="flex items-start max-w-md mx-auto">
-        <i data-lucide="wifi-off" class="h-5 w-5 mt-0.5 mr-2"></i>
-        <div>
-          <h3 class="font-medium">Connection Problem</h3>
-          <p class="text-sm mb-2">Please check your connection and try again.</p>
-          <button 
-            @click="retryConnections"
-            class="px-3 py-1 bg-red-200 hover:bg-red-300 rounded text-sm inline-flex items-center touch-feedback"
-          >
-            <i data-lucide="refresh-cw" class="h-3 w-3 mr-1"></i> Retry
-          </button>
-        </div>
-      </div>
-    </div>
 
     <header class="sticky top-0 z-50">
       <nav class="backdrop-blur-md bg-white/80 shadow-soft border-b border-pink-100">
@@ -191,7 +113,7 @@
           <div class="flex items-center justify-between h-16">
 
             <div
-              @click="handleSectionChange('home')"
+              @click="activeSection = 'home'"
               class="font-serif text-2xl font-bold text-primary cursor-pointer select-none"
             >
               SweetBites
@@ -199,7 +121,7 @@
 
             <div class="hidden md:flex space-x-8 items-center font-medium">
               <button
-                @click="handleSectionChange('home')"
+                @click="activeSection = 'home'"
                 class="relative px-3 py-2 transition-colors"
                 :class="{
                   'text-primary': activeSection === 'home',
@@ -214,7 +136,7 @@
               </button>
 
               <button
-                @click="handleSectionChange('products')"
+                @click="activeSection = 'products'"
                 class="relative px-3 py-2 transition-colors"
                 :class="{
                   'text-primary': activeSection === 'products',
@@ -229,7 +151,7 @@
               </button>
 
               <button
-                @click="handleSectionChange('wishlist')"
+                @click="activeSection = 'wishlist'"
                 class="relative px-3 py-2 transition-colors"
                 :class="{
                   'text-primary': activeSection === 'wishlist',
@@ -264,7 +186,7 @@
 
               <button
                 v-if="user.logged_in"
-                @click="handleSectionChange('orders')"
+                @click="activeSection = 'orders'"
                 class="relative px-3 py-2 transition-colors"
                 :class="{
                   'text-primary': activeSection === 'orders',
@@ -306,11 +228,11 @@
                   </svg>
                   <span>Logout</span>
                 </a>
-        </div>
+            </div>
             <div class="md:hidden">
               <button
-                @click="menuOpen = !menuOpen"
-                class="p-2 rounded-md hover:bg-pink-100 transition-colors touch-feedback"
+                @click="toggleMobileMenu"
+                class="p-2 rounded-md hover:bg-pink-100 transition-colors"
               >
                 <i
                   v-if="!menuOpen"
@@ -335,8 +257,8 @@
         >
           <div class="container mx-auto px-4 py-3 space-y-2 font-medium">
             <button
-              @click="handleSectionChange('home')"
-              class="block w-full text-left px-3 py-2 rounded-md transition-colors touch-feedback"
+              @click="handleMobileNavClick('home')"
+              class="block w-full text-left px-3 py-2 rounded-md transition-colors"
               :class="{
                 'bg-pink-100 text-primary': activeSection === 'home',
                 'hover:bg-gray-100': activeSection !== 'home'
@@ -346,8 +268,8 @@
             </button>
             
            <button
-              @click="handleSectionChange('products')"
-              class="block w-full text-left px-3 py-2 rounded-md transition-colors touch-feedback"
+              @click="handleMobileNavClick('products')"
+              class="block w-full text-left px-3 py-2 rounded-md transition-colors"
               :class="{
                 'bg-pink-100 text-primary': activeSection === 'products',
                 'hover:bg-gray-100': activeSection !== 'products'
@@ -357,8 +279,8 @@
             </button>
 
             <button
-              @click="handleSectionChange('wishlist')"
-              class="block w-full text-left px-3 py-2 rounded-md transition-colors touch-feedback"
+              @click="handleMobileNavClick('wishlist')"
+              class="block w-full text-left px-3 py-2 rounded-md transition-colors"
               :class="{
                 'bg-pink-100 text-primary': activeSection === 'wishlist',
                 'hover:bg-gray-100': activeSection !== 'wishlist'
@@ -374,8 +296,8 @@
             </button>
 
             <button
-              @click="cartOpen = true; menuOpen = false;"
-              class="block w-full text-left px-3 py-2 rounded-md transition-colors touch-feedback"
+              @click="openCartFromMobile"
+              class="block w-full text-left px-3 py-2 rounded-md transition-colors hover:bg-gray-100"
             >
               Cart
               <span
@@ -388,8 +310,8 @@
 
             <button
               v-if="user.logged_in"
-              @click="handleSectionChange('orders')"
-              class="block w-full text-left px-3 py-2 rounded-md transition-colors touch-feedback"
+              @click="handleMobileNavClick('orders')"
+              class="block w-full text-left px-3 py-2 rounded-md transition-colors"
               :class="{
                 'bg-pink-100 text-primary': activeSection === 'orders',
                 'hover:bg-gray-100': activeSection !== 'orders'
@@ -397,6 +319,7 @@
             >
               My Orders
             </button>
+
 
             <a
               v-if="user.logged_in && user.is_admin"
@@ -470,9 +393,9 @@
                 Discover our premium selection of handcrafted sweets, made with quality ingredients and lots of love.
               </p>
         <button
-            @click="handleSectionChange('products')"
+            @click="handleShopNow"
             class="px-8 py-3 bg-primary text-white rounded-full font-medium shadow-md-soft
-                   hover:bg-primary-hover hover:scale-105 active:scale-95 transition-transform touch-feedback"
+                   hover:bg-primary-hover hover:scale-105 active:scale-95 transition-transform"
           >
             <i data-lucide="shopping-basket" class="h-5 w-5 inline mr-2"></i>
             Shop Now
@@ -507,20 +430,20 @@
             <div
               v-for="product in featuredProducts"
               :key="product.id"
-              class="bg-white rounded-2xl shadow-md-soft overflow-hidden group card-item hover:-translate-y-2 transition-all duration-300"
+              class="bg-white rounded-2xl shadow-md-soft overflow-hidden group hover:-translate-y-2 transition-all duration-300"
             >
               <div class="relative overflow-hidden">
-                <div @click="showProductDetails(product)" class="cursor-pointer">
-                  <img
-                    :src="product.img"
-                    :alt="product.name"
-                    class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
+                <img
+                  :src="product.img"
+                  :alt="product.name"
+                  class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105 cursor-pointer"
+                  @click="showProductDetails(product)"
+                />
+
                 
                 <button
                   @click.stop="toggleWishlist(product.id)"
-                  class="absolute top-3 right-3 p-2 bg-white rounded-full shadow hover:bg-pink-50 transition-colors z-10 touch-feedback"
+                  class="absolute top-3 right-3 p-2 bg-white rounded-full shadow hover:bg-pink-50 transition-colors z-10"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -563,8 +486,8 @@
                     ${{ product.price.toFixed(2) }}
                   </span>
                   <button
-                    @click.stop="addToCart(product)"
-                    class="px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-all hover:scale-105 active:scale-95 touch-feedback"
+                    @click="addToCart(product)"
+                    class="px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-all hover:scale-105 active:scale-95"
                   >
                     <i data-lucide="shopping-cart" class="h-5 w-5"></i>
                   </button>
@@ -575,9 +498,9 @@
 
           <div class="text-center mt-12">
           <button
-              @click="handleSectionChange('products')"
+              @click="handleViewAllProducts"
               class="px-6 py-2 border-2 border-primary text-primary rounded-full font-medium
-                     hover:bg-primary hover:text-white transition-transform hover:scale-105 active:scale-95 touch-feedback"
+                     hover:bg-primary hover:text-white transition-transform hover:scale-105 active:scale-95"
             >
               View All Products
             </button>
@@ -699,7 +622,7 @@
           <button
             @click="currentFilter = 'all'"
             class="px-4 py-2 rounded-full text-sm font-medium shadow-sm
-                   transition-transform hover:scale-105 active:scale-95 touch-feedback"
+                   transition-transform hover:scale-105 active:scale-95"
             :class="[
               currentFilter === 'all'
                 ? 'bg-primary text-white'
@@ -714,7 +637,7 @@
             :key="category"
             @click="currentFilter = category.toLowerCase()"
             class="px-4 py-2 rounded-full text-sm font-medium shadow-sm
-                   transition-transform hover:scale-105 active:scale-95 touch-feedback"
+                   transition-transform hover:scale-105 active:scale-95"
             :class="[
               currentFilter === category.toLowerCase()
                 ? 'bg-primary text-white'
@@ -727,7 +650,7 @@
           <div class="relative group">
             <button
               class="px-4 py-2 rounded-full text-sm font-medium bg-white border border-gray-200
-                     hover:border-pink-200 flex items-center hover:scale-105 active:scale-95 shadow-sm touch-feedback"
+                     hover:border-pink-200 flex items-center hover:scale-105 active:scale-95 shadow-sm"
             >
               <span>Sort By</span>
               <i data-lucide="chevron-down" class="h-4 w-4 ml-1"></i>
@@ -738,25 +661,25 @@
             >
               <button
                 @click="sortOrder = 'price-asc'"
-                class="block w-full text-left px-4 py-2 hover:bg-gray-50 rounded-t-lg touch-feedback"
+                class="block w-full text-left px-4 py-2 hover:bg-gray-50 rounded-t-lg"
               >
                 Price: Low to High
               </button>
               <button
                 @click="sortOrder = 'price-desc'"
-                class="block w-full text-left px-4 py-2 hover:bg-gray-50 touch-feedback"
+                class="block w-full text-left px-4 py-2 hover:bg-gray-50"
               >
                 Price: High to Low
               </button>
               <button
                 @click="sortOrder = 'name-asc'"
-                class="block w-full text-left px-4 py-2 hover:bg-gray-50 touch-feedback"
+                class="block w-full text-left px-4 py-2 hover:bg-gray-50"
               >
                 Name: A to Z
               </button>
               <button
                 @click="sortOrder = 'name-desc'"
-                class="block w-full text-left px-4 py-2 hover:bg-gray-50 rounded-b-lg touch-feedback"
+                class="block w-full text-left px-4 py-2 hover:bg-gray-50 rounded-b-lg"
               >
                 Name: Z to A
               </button>
@@ -768,9 +691,8 @@
           <div
             v-for="product in filteredProducts"
             :key="product.id"
-            class="bg-white rounded-2xl shadow-md-soft overflow-hidden group card-item
+            class="bg-white rounded-2xl shadow-md-soft overflow-hidden group
                    hover:-translate-y-2 transition-all duration-300"
-            :class="{ 'item-highlight': product._highlight }"
           >
             <div class="relative overflow-hidden">
               <span
@@ -779,17 +701,18 @@
               >
                 {{ product.category }}
               </span>
-              <div @click="showProductDetails(product)" class="cursor-pointer">
-                <img
-                  :src="product.img"
-                  :alt="product.name"
-                  class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
+              <img
+                :src="product.img"
+                :alt="product.name"
+                class="w-full h-48 object-cover transition-transform duration-500
+                       group-hover:scale-105 cursor-pointer"
+                @click="showProductDetails(product)"
+              />
+
               
               <button
                 class="absolute top-3 right-3 p-2 bg-white rounded-full shadow hover:bg-pink-50
-                       transition-colors z-10 touch-feedback"
+                       transition-colors z-10"
                 @click.stop="toggleWishlist(product.id)"
               >
                 <svg
@@ -823,9 +746,9 @@
                 ${{ product.price.toFixed(2) }}
               </p>
               <button
-                @click.stop="addToCart(product)"
+                @click="addToCart(product)"
                 class="mt-auto w-full py-2 bg-primary text-white rounded-lg
-                       hover:bg-primary-hover transition-colors flex items-center justify-center mt-4 touch-feedback"
+                       hover:bg-primary-hover transition-colors flex items-center justify-center mt-4"
               >
                 <i data-lucide="shopping-cart" class="h-5 w-5 mr-2"></i> Add to Cart
               </button>
@@ -839,7 +762,7 @@
           <p class="text-gray-500 mt-2">Try adjusting your search or filter criteria</p>
           <button
             @click="resetFilters"
-            class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors touch-feedback"
+            class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
           >
             Clear Filters
           </button>
@@ -867,9 +790,9 @@
             Add products to your wishlist to save them for later
           </p>
           <button
-            @click="handleSectionChange('products')"
+            @click="activeSection = 'products'"
             class="mt-4 px-4 py-2 bg-primary text-white rounded-lg
-                   hover:bg-primary-hover transition-colors touch-feedback"
+                   hover:bg-primary-hover transition-colors"
           >
             Browse Products
           </button>
@@ -884,7 +807,7 @@
           <div
             v-for="product in wishlistProducts"
             :key="product.id"
-            class="bg-white rounded-2xl shadow-md-soft overflow-hidden group card-item
+            class="bg-white rounded-2xl shadow-md-soft overflow-hidden group
                    hover:-translate-y-2 transition-all duration-300"
           >
             <div class="relative overflow-hidden">
@@ -894,17 +817,18 @@
               >
                 {{ product.category }}
               </span>
-              <div @click="showProductDetails(product)" class="cursor-pointer">
-                <img
-                  :src="product.img"
-                  :alt="product.name"
-                  class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
+              <img
+                :src="product.img"
+                :alt="product.name"
+                class="w-full h-48 object-cover transition-transform duration-500
+                       group-hover:scale-105 cursor-pointer"
+                @click="showProductDetails(product)"
+              />
+
               
               <button
                 class="absolute top-3 right-3 p-2 bg-white rounded-full shadow hover:bg-pink-50
-                       transition-colors z-10 touch-feedback"
+                       transition-colors z-10"
                 @click.stop="toggleWishlist(product.id)"
               >
                 <svg
@@ -940,17 +864,17 @@
               </p>
               <div class="mt-4 space-y-2">
                 <button
-                  @click.stop="addToCart(product)"
+                  @click="addToCart(product)"
                   class="w-full py-2 bg-primary text-white rounded-lg
-                         hover:bg-primary-hover transition-colors flex items-center justify-center touch-feedback"
+                         hover:bg-primary-hover transition-colors flex items-center justify-center"
                 >
                   <i data-lucide="shopping-cart" class="h-5 w-5 mr-2"></i>
                   Add to Cart
                 </button>
                 <button
-                  @click.stop="toggleWishlist(product.id)"
+                  @click="toggleWishlist(product.id)"
                   class="w-full py-2 border border-primary text-primary rounded-lg
-                         hover:bg-rose-50 transition-colors flex items-center justify-center touch-feedback"
+                         hover:bg-rose-50 transition-colors flex items-center justify-center"
                 >
                   <i data-lucide="trash" class="h-4 w-4 mr-2"></i>
                   Remove
@@ -977,13 +901,13 @@
           <div class="space-x-3">
             <a
               href="/login"
-              class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors touch-feedback"
+              class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
             >
               Login
             </a>
             <a
               href="/register"
-              class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors touch-feedback"
+              class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
             >
               Create Account
             </a>
@@ -1002,11 +926,11 @@
           <h3 class="text-xl font-medium">No Orders Found</h3>
           <p class="text-gray-500 mt-2">You haven't placed any orders yet.</p>
          <button
-            @click="handleSectionChange('products')"
-            class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors touch-feedback"
-          >
-            Start Shopping
-          </button>
+          @click="handleViewAllProducts"
+          class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
+        >
+          Start Shopping
+        </button>
         </div>
 
         <div v-else class="space-y-6 max-w-4xl mx-auto">
@@ -1141,8 +1065,8 @@
             Add products to your cart before proceeding to checkout.
           </p>
          <button
-            @click="handleSectionChange('products')"
-            class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors touch-feedback"
+            @click="handleViewAllProducts"
+            class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
           >
             Browse Products
           </button>
@@ -1233,7 +1157,7 @@
                         type="button"
                         @click="applyDiscount"
                         class="px-4 bg-primary text-white rounded-r-lg
-                               hover:bg-primary-hover transition-colors touch-feedback"
+                               hover:bg-primary-hover transition-colors"
                       >
                         Apply
                       </button>
@@ -1333,7 +1257,7 @@
                     :disabled="isProcessingCheckout"
                     class="w-full py-3 bg-primary text-white rounded-lg font-medium
                            hover:bg-primary-hover transition-colors disabled:opacity-70
-                           disabled:cursor-not-allowed touch-feedback"
+                           disabled:cursor-not-allowed"
                   >
                     <template v-if="isProcessingCheckout">
                       <svg
@@ -1383,7 +1307,6 @@
                     v-for="item in cart"
                     :key="item.id"
                     class="flex py-3 first:pt-0"
-                    :class="{ 'item-highlight': item._highlight }"
                   >
                     <img
                       :src="item.img"
@@ -1449,7 +1372,7 @@
             </h2>
             <button
               @click="cartOpen = false"
-              class="p-1 rounded-full hover:bg-pink-100 transition-colors touch-feedback"
+              class="p-1 rounded-full hover:bg-pink-100 transition-colors"
             >
               <i data-lucide="x" class="h-6 w-6"></i>
             </button>
@@ -1466,9 +1389,9 @@
                 Add some delicious treats to get started!
               </p>
           <button
-              @click="handleCartToBrowse"
+              @click="handleBrowseProductsFromCart"
               class="mt-4 px-4 py-2 bg-primary text-white rounded-full
-                     hover:bg-primary-hover transition-colors touch-feedback"
+                     hover:bg-primary-hover transition-colors"
             >
               Browse Products
             </button>
@@ -1485,7 +1408,6 @@
                 :key="item.id"
                 class="flex items-center p-3 bg-white rounded-2xl shadow-sm
                        border border-gray-100 hover:shadow-md transition-shadow"
-                :class="{ 'item-highlight': item._highlight }"
               >
                 <img
                   :src="item.img"
@@ -1498,14 +1420,14 @@
                     <div class="flex items-center border rounded-full overflow-hidden text-sm">
                       <button
                         @click="decreaseQuantity(index)"
-                        class="px-2 bg-gray-100 hover:bg-gray-200 transition-colors touch-feedback"
+                        class="px-2 bg-gray-100 hover:bg-gray-200 transition-colors"
                       >
                         -
                       </button>
                       <span class="px-2">{{ item.quantity }}</span>
                       <button
                         @click="increaseQuantity(index)"
-                        class="px-2 bg-gray-100 hover:bg-gray-200 transition-colors touch-feedback"
+                        class="px-2 bg-gray-100 hover:bg-gray-200 transition-colors"
                       >
                         +
                       </button>
@@ -1517,7 +1439,7 @@
                       <button
                         @click="removeFromCart(index)"
                         class="ml-2 p-1 text-gray-400 hover:text-red-500
-                               transition-colors touch-feedback"
+                               transition-colors"
                       >
                         <i data-lucide="x" class="h-4 w-4"></i>
                       </button>
@@ -1548,7 +1470,7 @@
                 <button
                   @click="applyDiscount"
                   class="px-4 bg-primary text-white rounded-r-full
-                         hover:bg-primary-hover transition-colors touch-feedback"
+                         hover:bg-primary-hover transition-colors"
                 >
                   Apply
                 </button>
@@ -1591,14 +1513,14 @@
               <button
                 @click="proceedToCheckout"
                 class="w-full py-3 bg-primary text-white rounded-full
-                       font-medium hover:bg-primary-hover transition-colors touch-feedback"
+                       font-medium hover:bg-primary-hover transition-colors"
               >
                 Proceed to Checkout
               </button>
               <button
                 @click="cartOpen = false"
                 class="w-full py-2 border border-gray-300 rounded-full
-                       hover:bg-gray-100 transition-colors touch-feedback"
+                       hover:bg-gray-100 transition-colors"
               >
                 Continue Shopping
               </button>
@@ -1624,7 +1546,7 @@
           <button
             @click="productInView = null"
             class="absolute top-2 right-2 p-1 bg-white/80 rounded-full z-10
-                   hover:bg-pink-100 transition-colors touch-feedback"
+                   hover:bg-pink-100 transition-colors"
           >
             <i data-lucide="x" class="h-6 w-6"></i>
           </button>
@@ -1673,7 +1595,7 @@
                 <div class="flex items-center border rounded-xl overflow-hidden">
                   <button
                     @click="modalQuantity > 1 ? modalQuantity-- : null"
-                    class="p-2 bg-gray-100 hover:bg-gray-200 transition-colors touch-feedback"
+                    class="p-2 bg-gray-100 hover:bg-gray-200 transition-colors"
                   >
                     <i data-lucide="minus" class="h-4 w-4"></i>
                   </button>
@@ -1686,7 +1608,7 @@
                   />
                   <button
                     @click="modalQuantity++"
-                    class="p-2 bg-gray-100 hover:bg-gray-200 transition-colors touch-feedback"
+                    class="p-2 bg-gray-100 hover:bg-gray-200 transition-colors"
                   >
                     <i data-lucide="plus" class="h-4 w-4"></i>
                   </button>
@@ -1694,7 +1616,7 @@
                 <button
                   @click="addToCartWithQuantity"
                   class="flex-grow py-2 bg-primary text-white rounded-xl font-medium
-                         hover:bg-primary-hover transition-colors hover:scale-105 active:scale-95 touch-feedback"
+                         hover:bg-primary-hover transition-colors hover:scale-105 active:scale-95"
                 >
                   Add to Cart
                 </button>
@@ -1704,7 +1626,7 @@
               <button
                 @click="toggleWishlist(productInView.id)"
                 :class="[
-                  'flex items-center justify-center w-full py-2 rounded-xl border transition-colors touch-feedback',
+                  'flex items-center justify-center w-full py-2 rounded-xl border transition-colors',
                   isInWishlist(productInView.id)
                     ? 'border-primary text-primary bg-rose-50'
                     : 'border-gray-300 hover:bg-gray-100'
@@ -1772,14 +1694,14 @@
               <button
                 @click="orderSuccessModal = false"
                 class="flex-1 py-2 border border-gray-300 rounded-xl
-                       hover:bg-gray-100 transition-colors touch-feedback"
+                       hover:bg-gray-100 transition-colors"
               >
                 Close
               </button>
               <button
                 @click="viewOrders"
                 class="flex-1 py-2 bg-primary text-white rounded-xl font-medium
-                       hover:bg-primary-hover transition-colors touch-feedback"
+                       hover:bg-primary-hover transition-colors"
               >
                 View My Orders
               </button>
@@ -1791,7 +1713,7 @@
   </div>
 
   <script>
-    const { createApp, ref, computed, onMounted, onBeforeUnmount, watch } = Vue;
+    const { createApp, ref, computed, onMounted, watch } = Vue;
 
     createApp({
       setup() {
@@ -1808,8 +1730,11 @@
         const categories = ref([]);
         const orders = ref([]);
         const toasts = ref([]);
+
+        // Fixing those incomplete refs:
         const productInView = ref(null); 
         const modalQuantity = ref(1);
+
         const discountCode = ref('');
         const discountMessage = ref('');
         const discountValid = ref(false);
@@ -1821,9 +1746,6 @@
         const isProcessingCheckout = ref(false);
         const lastOrderId = ref(null);
         const orderSuccessModal = ref(false);
-        const isLoadingProducts = ref(true);
-        const connectionError = ref(false);
-        const isMobile = ref(false);
 
         const checkoutInfo = ref({
           customer_name: '',
@@ -1877,17 +1799,6 @@
           }
         ];
 
-        // Mobile detection
-        const detectMobile = () => {
-          isMobile.value = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-                           window.innerWidth <= 768;
-          if (isMobile.value) {
-            document.body.classList.add('is-mobile');
-          } else {
-            document.body.classList.remove('is-mobile');
-          }
-        };
-
         // Load from localStorage
         const loadStoredData = () => {
           const storedCart = localStorage.getItem('cartItems');
@@ -1922,121 +1833,51 @@
           localStorage.setItem('wishlistItems', JSON.stringify(wishlist.value));
         };
 
-        // Retry connections
-        const retryConnections = async () => {
-          connectionError.value = false;
-          isLoadingProducts.value = true;
-          try {
-            await Promise.all([
-              fetchProducts(),
-              fetchCategories(),
-              fetchCurrentUser()
-            ]);
-          } finally {
-            isLoadingProducts.value = false;
-          }
-        };
-
         // Fetch data
         const fetchProducts = async () => {
           try {
-            // For demo purposes - normally this would be a real API call
-            // Simulating products data for the demo
-            setTimeout(() => {
-              products.value = [
-                {
-                  id: 1,
-                  name: 'Chocolate Cake',
-                  description: 'Rich chocolate cake with smooth ganache topping',
-                  price: 24.99,
-                  category: 'cakes',
-                  img: 'https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?auto=compress&cs=tinysrgb&h=650&w=940'
-                },
-                {
-                  id: 2,
-                  name: 'Strawberry Macarons',
-                  description: 'Light and airy macarons with strawberry filling',
-                  price: 12.99,
-                  category: 'cookies',
-                  img: 'https://images.pexels.com/photos/239581/pexels-photo-239581.jpeg?auto=compress&cs=tinysrgb&h=650&w=940'
-                },
-                {
-                  id: 3,
-                  name: 'Vanilla Cupcakes',
-                  description: 'Fluffy vanilla cupcakes with buttercream frosting',
-                  price: 18.99,
-                  category: 'cupcakes',
-                  img: 'https://images.pexels.com/photos/1028714/pexels-photo-1028714.jpeg?auto=compress&cs=tinysrgb&h=650&w=940'
-                },
-                {
-                  id: 4,
-                  name: 'Blueberry Cheesecake',
-                  description: 'Creamy cheesecake with fresh blueberry topping',
-                  price: 29.99,
-                  category: 'cakes',
-                  img: 'https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&h=650&w=940'
-                },
-                {
-                  id: 5,
-                  name: 'Chocolate Chip Cookies',
-                  description: 'Classic cookies with generous chocolate chunks',
-                  price: 15.99,
-                  category: 'cookies',
-                  img: 'https://images.pexels.com/photos/230325/pexels-photo-230325.jpeg?auto=compress&cs=tinysrgb&h=650&w=940'
-                },
-                {
-                  id: 6,
-                  name: 'Red Velvet Cake',
-                  description: 'Deep red cake with cream cheese frosting',
-                  price: 27.99,
-                  category: 'cakes',
-                  img: 'https://images.pexels.com/photos/132694/pexels-photo-132694.jpeg?auto=compress&cs=tinysrgb&h=650&w=940'
-                }
-              ];
-              isLoadingProducts.value = false;
-            }, 800);
+            const response = await fetch('/api/products');
+            if (response.ok) {
+              products.value = await response.json();
+            }
           } catch (error) {
             console.error('Error fetching products:', error);
-            connectionError.value = true;
             showNotification('Failed to load products. Please try again.', 'error');
           }
         };
-
         const fetchCategories = async () => {
           try {
-            // Simulating categories data for demo
-            setTimeout(() => {
-              categories.value = ['Cakes', 'Cookies', 'Cupcakes'];
-            }, 600);
+            const response = await fetch('/api/categories');
+            if (response.ok) {
+              categories.value = await response.json();
+            }
           } catch (error) {
             console.error('Error fetching categories:', error);
           }
         };
-
         const fetchCurrentUser = async () => {
           try {
-            // Simulating user data for demo
-            setTimeout(() => {
-              user.value = {
-                logged_in: false,
-                email: '',
-                is_admin: false
-              };
-            }, 400);
+            const response = await fetch('/api/current_user');
+            if (response.ok) {
+              user.value = await response.json();
+
+              // Prefill checkout info with user email if logged in
+              if (user.value.logged_in) {
+                checkoutInfo.value.customer_email = user.value.email;
+              }
+            }
           } catch (error) {
             console.error('Error fetching current user:', error);
           }
         };
-
         const fetchOrders = async () => {
           if (!user.value.logged_in) return;
           isLoadingOrders.value = true;
           try {
-            // Simulating orders data for demo
-            setTimeout(() => {
-              orders.value = [];
-              isLoadingOrders.value = false;
-            }, 1000);
+            const response = await fetch('/api/orders');
+            if (response.ok) {
+              orders.value = await response.json();
+            }
           } catch (error) {
             console.error('Error fetching orders:', error);
             showNotification('Failed to load orders. Please try again.', 'error');
@@ -2050,14 +1891,12 @@
           const product = products.value.find(p => p.id === productId);
           return product ? product.img : '';
         };
-        
         const truncateText = (text, maxLength) => {
           if (!text) return '';
           return text.length > maxLength
             ? text.substring(0, maxLength) + '...'
             : text;
         };
-        
         const formatDate = (dateString) => {
           if (!dateString) return '';
           const date = new Date(dateString);
@@ -2069,7 +1908,6 @@
             minute: '2-digit'
           });
         };
-        
         const capitalize = (str) => {
           if (!str) return '';
           return str.charAt(0).toUpperCase() + str.slice(1);
@@ -2078,7 +1916,6 @@
         // Computed
         const filteredProducts = computed(() => {
           let result = products.value;
-          
           // Search
           if (searchQuery.value) {
             const q = searchQuery.value.toLowerCase();
@@ -2087,7 +1924,6 @@
               (p.description && p.description.toLowerCase().includes(q))
             );
           }
-          
           // Category
           if (currentFilter.value !== 'all') {
             result = result.filter(p => {
@@ -2095,7 +1931,6 @@
               return p.category.toLowerCase() === currentFilter.value;
             });
           }
-          
           // Sort
           if (sortOrder.value) {
             if (sortOrder.value === 'price-asc') {
@@ -2108,224 +1943,122 @@
               result.sort((a, b) => b.name.localeCompare(a.name));
             }
           }
-          
           return result;
         });
-        
         const featuredProducts = computed(() => {
           // Random subset, 3 items
           return [...products.value].sort(() => 0.5 - Math.random()).slice(0, 3);
         });
-        
         const wishlistProducts = computed(() => {
           // Filter products that are in the wishlist
           return products.value.filter(product =>
             wishlist.value.includes(product.id)
           );
         });
-        
         const cartItemCount = computed(() => {
           return cart.value.reduce((sum, item) => sum + item.quantity, 0);
         });
-        
         const cartSubtotal = computed(() => {
           return cart.value.reduce(
             (sum, item) => sum + (item.price * item.quantity),
             0
           );
         });
-        
         const calculatedShippingCost = computed(() => {
           return checkoutInfo.value.shipping_method === 'standard'
             ? standardShippingRate.value
             : expressShippingRate.value;
         });
-        
         const cartTotal = computed(() => {
           return cartSubtotal.value - discountAmount.value + shippingCost.value;
         });
-        
         const checkoutTotal = computed(() => {
-          return cartSubtotal.value - discountAmount.value + calculatedShippingCost.value;
+          return cartSubtotal.value - discountAmount.value
+            + calculatedShippingCost.value;
         });
 
         // Notification system
         const showNotification = (message, type = 'success') => {
           const newToast = { id: Date.now(), message, type };
           toasts.value.push(newToast);
-          
-          // Provide haptic feedback on mobile if supported
-          if (navigator.vibrate && isMobile.value) {
-            navigator.vibrate(type === 'success' ? 50 : [100, 50, 100]);
-          }
-          
           setTimeout(() => {
             removeToast(newToast.id);
           }, 3000);
         };
-        
         const removeToast = (id) => {
           toasts.value = toasts.value.filter(t => t.id !== id);
         };
 
-        // Navigation handlers for mobile - fixed implementation
-        const handleSectionChange = (section) => {
-          // First change the section
-          activeSection.value = section;
-          // Then close the menu with a slight delay to allow animation
-          menuOpen.value = false;
-        };
-
-        // Cart functions optimized for mobile
+        // Cart
         const addToCart = (product) => {
-          // Find if product exists
           const existing = cart.value.find(item => item.id === product.id);
-          
           if (existing) {
-            // Increment with animation feedback
             existing.quantity++;
-            // Add temporary highlight class
-            existing._highlight = true;
-            // Remove highlight after animation
-            setTimeout(() => {
-              existing._highlight = false;
-            }, 1000);
           } else {
-            // Add new product with animation feedback
-            const newItem = { ...product, quantity: 1, _highlight: true };
-            cart.value.push(newItem);
-            // Remove highlight after animation
-            setTimeout(() => {
-              const idx = cart.value.findIndex(item => item.id === product.id);
-              if (idx !== -1) {
-                cart.value[idx]._highlight = false;
-              }
-            }, 1000);
+            cart.value.push({ ...product, quantity: 1 });
           }
-          
-          // Save cart synchronously
           saveCart();
           updateShippingCost();
-          
-          // Show notification
           showNotification(`${product.name} added to cart!`);
-          
-          // Provide haptic feedback on mobile if available
-          if (navigator.vibrate && isMobile.value) {
-            navigator.vibrate(50);
-          }
         };
-
         const addToCartWithQuantity = () => {
           if (!productInView.value) return;
-          
           const product = productInView.value;
           const qty = parseInt(modalQuantity.value) || 1;
-          
           const existing = cart.value.find(item => item.id === product.id);
           if (existing) {
             existing.quantity += qty;
-            existing._highlight = true;
-            setTimeout(() => {
-              existing._highlight = false;
-            }, 1000);
           } else {
-            const newItem = { ...product, quantity: qty, _highlight: true };
-            cart.value.push(newItem);
-            setTimeout(() => {
-              const idx = cart.value.findIndex(item => item.id === product.id);
-              if (idx !== -1) {
-                cart.value[idx]._highlight = false;
-              }
-            }, 1000);
+            cart.value.push({ ...product, quantity: qty });
           }
-          
           saveCart();
           updateShippingCost();
-          
           showNotification(`${qty} ${product.name} added to cart!`);
-          
-          // Provide haptic feedback
-          if (navigator.vibrate && isMobile.value) {
-            navigator.vibrate(50);
-          }
-          
           productInView.value = null;
           modalQuantity.value = 1;
         };
-
         const removeFromCart = (index) => {
           const item = cart.value[index];
           cart.value.splice(index, 1);
           saveCart();
           updateShippingCost();
           showNotification(`${item.name} removed from cart!`);
-          
-          // Provide haptic feedback
-          if (navigator.vibrate && isMobile.value) {
-            navigator.vibrate(100);
-          }
         };
-
         const increaseQuantity = (index) => {
           cart.value[index].quantity++;
-          cart.value[index]._highlight = true;
-          setTimeout(() => {
-            cart.value[index]._highlight = false;
-          }, 500);
           saveCart();
           updateShippingCost();
         };
-
         const decreaseQuantity = (index) => {
           if (cart.value[index].quantity > 1) {
             cart.value[index].quantity--;
-            cart.value[index]._highlight = true;
-            setTimeout(() => {
-              if (cart.value[index]) {
-                cart.value[index]._highlight = false;
-              }
-            }, 500);
             saveCart();
             updateShippingCost();
           } else {
             removeFromCart(index);
           }
         };
-
         const updateShippingCost = () => {
-          shippingCost.value = cartSubtotal.value >= 50 ? 0 : standardShippingRate.value;
+          shippingCost.value =
+            cartSubtotal.value >= 50
+              ? 0
+              : standardShippingRate.value;
         };
 
-        // Wishlist functions
+        // Wishlist
         const toggleWishlist = (productId) => {
           const idx = wishlist.value.indexOf(productId);
           if (idx === -1) {
             wishlist.value.push(productId);
             showNotification('Item added to wishlist!');
-            
-            // Highlight the product if it's in the view
-            const productInList = products.value.find(p => p.id === productId);
-            if (productInList) {
-              productInList._highlight = true;
-              setTimeout(() => {
-                productInList._highlight = false;
-              }, 1000);
-            }
           } else {
             wishlist.value.splice(idx, 1);
             showNotification('Item removed from wishlist!');
           }
-          
           saveWishlist();
-          
-          // Provide haptic feedback
-          if (navigator.vibrate && isMobile.value) {
-            navigator.vibrate(idx === -1 ? 50 : 100);
-          }
         };
-
-        const isInWishlist = (productId) => wishlist.value.includes(productId);
+        const isInWishlist = (productId) =>
+          wishlist.value.includes(productId);
 
         // Product Modal
         const showProductDetails = (product) => {
@@ -2348,33 +2081,33 @@
             discountAmount.value = 0;
             return;
           }
-          
-          // Demo discount codes
-          const demoDiscounts = {
-            'WELCOME10': { type: 'percent', amount: 10 },
-            'SWEETDEAL': { type: 'percent', amount: 15 },
-            'TREAT5': { type: 'flat', amount: 5 }
-          };
-          
-          const code = discountCode.value.toUpperCase();
-          if (demoDiscounts[code]) {
-            discountValid.value = true;
-            const discount = demoDiscounts[code];
-            
-            if (discount.type === 'percent') {
-              discountAmount.value = cartSubtotal.value * (discount.amount / 100);
-              discountMessage.value = `${discount.amount}% discount applied!`;
-            } else if (discount.type === 'flat') {
-              discountAmount.value = Math.min(discount.amount, cartSubtotal.value);
-              discountMessage.value = `$${discount.amount.toFixed(2)} discount applied!`;
+          try {
+            const response = await fetch('/api/validate-discount', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ code: discountCode.value })
+            });
+            const result = await response.json();
+            if (result.success) {
+              discountValid.value = true;
+              if (result.type === 'percent') {
+                discountAmount.value = cartSubtotal.value * (result.amount / 100);
+                discountMessage.value = `${result.amount}% discount applied!`;
+              } else if (result.type === 'flat') {
+                discountAmount.value =
+                  Math.min(result.amount, cartSubtotal.value);
+                discountMessage.value = `$${result.amount.toFixed(2)} discount applied!`;
+              }
+            } else {
+              discountValid.value = false;
+              discountAmount.value = 0;
+              discountMessage.value = result.error || 'Invalid discount code';
             }
-            
-            showNotification(`Discount code ${code} applied!`, 'success');
-          } else {
+          } catch (error) {
+            console.error('Error validating discount:', error);
             discountValid.value = false;
             discountAmount.value = 0;
-            discountMessage.value = 'Invalid discount code';
-            showNotification('Invalid discount code', 'error');
+            discountMessage.value = 'Error validating discount code';
           }
         };
 
@@ -2384,113 +2117,126 @@
             showNotification('Your cart is empty!', 'error');
             return;
           }
-          
-          // Close cart immediately to prevent transition issues on mobile
           cartOpen.value = false;
-          
-          // Change section directly without delay
           activeSection.value = 'checkout';
         };
-
         const processCheckout = async () => {
           if (!cart.value.length) {
             showNotification('Your cart is empty!', 'error');
             return;
           }
-          
           isProcessingCheckout.value = true;
-          
           try {
-            // For demo, simulate API call with setTimeout
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            // Demo order success
-            lastOrderId.value = Math.floor(100000 + Math.random() * 900000);
-            cart.value = [];
-            saveCart();
-            discountCode.value = '';
-            discountMessage.value = '';
-            discountValid.value = false;
-            discountAmount.value = 0;
-            orderSuccessModal.value = true;
-            
-            if (user.value.logged_in) {
-              fetchOrders();
+            const checkoutData = {
+              items: cart.value.map(item => ({
+                id: item.id,
+                price: item.price,
+                quantity: item.quantity
+              })),
+              discount_code: discountValid.value ? discountCode.value : '',
+              shipping_cost: calculatedShippingCost.value,
+              customer_name: checkoutInfo.value.customer_name,
+              customer_email: checkoutInfo.value.customer_email,
+              shipping_address: checkoutInfo.value.shipping_address
+            };
+            const response = await fetch('/api/checkout', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(checkoutData)
+            });
+            const result = await response.json();
+            if (result.success) {
+              lastOrderId.value = result.order_id;
+              cart.value = [];
+              saveCart();
+              discountCode.value = '';
+              discountMessage.value = '';
+              discountValid.value = false;
+              discountAmount.value = 0;
+              orderSuccessModal.value = true;
+              if (user.value.logged_in) {
+                fetchOrders();
+              }
+            } else {
+              showNotification(
+                result.error || 'Error processing your order. Please try again.',
+                'error'
+              );
             }
           } catch (error) {
             console.error('Error processing checkout:', error);
-            showNotification('Error processing your order. Please try again.', 'error');
+            showNotification(
+              'Error processing your order. Please try again.',
+              'error'
+            );
           } finally {
             isProcessingCheckout.value = false;
           }
         };
-
         const viewOrders = () => {
           orderSuccessModal.value = false;
           activeSection.value = 'orders';
         };
 
-        // Handle empty cart to products navigation
-        const handleCartToBrowse = () => {
+        // Mobile Menu Handlers
+        const toggleMobileMenu = () => {
+          menuOpen.value = !menuOpen.value;
+        };
+
+        const handleMobileNavClick = (section) => {
+          activeSection.value = section;
+          menuOpen.value = false;
+        };
+
+        const openCartFromMobile = () => {
+          menuOpen.value = false;
+          cartOpen.value = true;
+        };
+
+        // Navigation Handlers
+        const handleProductsClick = () => {
+          menuOpen.value = false;
+          activeSection.value = 'products';
+        };
+        
+        const handleMyOrdersClick = () => {
+          menuOpen.value = false;
+          activeSection.value = 'orders';
+        };
+        
+        const handleWishlistClick = () => {
+          menuOpen.value = false;
+          activeSection.value = 'wishlist';
+        };
+        
+        const handleHomeClick = () => {
+          menuOpen.value = false;
+          activeSection.value = 'home';
+        };
+        
+        const handleBrowseProductsFromCart = () => {
           cartOpen.value = false;
           activeSection.value = 'products';
         };
-
-        // Check for offline status
-        const checkConnection = () => {
-          if (!navigator.onLine) {
-            connectionError.value = true;
-            // Redirect to offline page in production
-            // window.location.href = '/offline.html';
-          } else {
-            connectionError.value = false;
-          }
+        
+        const handleShopNow = () => {
+          activeSection.value = 'products';
+        };
+        
+        const handleViewAllProducts = () => {
+          activeSection.value = 'products';
         };
 
         // Lifecycle
         onMounted(() => {
-          // Detect mobile device
-          detectMobile();
-          
-          // Check connection status
-          checkConnection();
-          
           loadStoredData();
           fetchProducts();
           fetchCategories();
           fetchCurrentUser();
           updateShippingCost();
-          
-          // Initialize Lucide for the icons
+          // Initialize Lucide for the icons that remain
           lucide.createIcons();
-          
-          // Add resize listener for mobile detection
-          window.addEventListener('resize', detectMobile);
-          
-          // Add online/offline listeners
-          window.addEventListener('online', () => {
-            connectionError.value = false;
-            retryConnections();
-          });
-          
-          window.addEventListener('offline', () => {
-            connectionError.value = true;
-          });
         });
-
-        onBeforeUnmount(() => {
-          // Clean up event listeners
-          window.removeEventListener('resize', detectMobile);
-          window.removeEventListener('online', () => {
-            connectionError.value = false;
-            retryConnections();
-          });
-          window.removeEventListener('offline', () => {
-            connectionError.value = true;
-          });
-        });
-
-        // Watch for changes
         watch(cartSubtotal, () => {
           updateShippingCost();
           // If discount is percentage-based, recalc discount when subtotal changes
@@ -2499,13 +2245,11 @@
             discountAmount.value = cartSubtotal.value * (percent / 100);
           }
         });
-
         watch(activeSection, (section) => {
           if (section === 'orders' && user.value.logged_in) {
             fetchOrders();
           }
         });
-
         watch(() => user.value.logged_in, (loggedIn) => {
           if (loggedIn) {
             checkoutInfo.value.customer_email = user.value.email;
@@ -2546,9 +2290,6 @@
           orderSuccessModal,
           features,
           testimonials,
-          isLoadingProducts,
-          connectionError,
-          isMobile,
 
           // Computed
           filteredProducts,
@@ -2581,21 +2322,32 @@
           proceedToCheckout,
           processCheckout,
           viewOrders,
-          handleSectionChange,
-          handleCartToBrowse,
-          retryConnections,
-          detectMobile,
-          checkConnection,
+          // Mobile specific methods
+          toggleMobileMenu,
+          handleMobileNavClick,
+          openCartFromMobile,
+          // Navigation methods
+          handleProductsClick,
+          handleMyOrdersClick,
+          handleWishlistClick,
+          handleHomeClick,
+          handleBrowseProductsFromCart,
+          handleShopNow,
+          handleViewAllProducts,
         };
       }
     }).mount('#app');
 
+    // Service Worker for offline support
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/service-worker.js")
-        .then(registration => {
-          console.log("Service Worker registered with scope:", registration.scope);
-        })
-        .catch(error => {
-          console.error("Service Worker registration failed:", error);
-        });
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("/service-worker.js")
+          .then(registration => {
+            console.log("Service Worker registered successfully:", registration.scope);
+          })
+          .catch(error => {
+            console.log("Service Worker registration failed:", error);
+          });
+      });
     }
