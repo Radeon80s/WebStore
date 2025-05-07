@@ -110,7 +110,7 @@ def home():
     return app.send_static_file('index.html')
 
 @app.route('/srijan')
-def home():
+def poker():
     return app.send_static_file('simple-poker-calculator.html')
 
 # Authentication routes
