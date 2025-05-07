@@ -109,6 +109,10 @@ def login_required(f):
 def home():
     return app.send_static_file('index.html')
 
+@app.route('/srijan')
+def home():
+    return app.send_static_file('simple-poker-calculator.html')
+
 # Authentication routes
 @app.route('/register', methods=['GET','POST'])
 def register():
