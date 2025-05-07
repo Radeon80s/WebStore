@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No-KYC Crypto Poker Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .calculator {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        .row {
+            display: flex;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .col {
+            flex: 1;
+            min-width: 200px;
+            padding: 0 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .tooltip {
+            color: #3498db;
+            cursor: help;
+            margin-left: 5px;
+            position: relative;
+        }
+        .tooltip:hover::after {
+            content: attr(data-tip);
+            position: absolute;
+            left: 20px;
+            top: -5px;
+            background: #34495e;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            width: 200px;
+            z-index: 10;
+            font-weight: normal;
+            font-size: 14px;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .results {
+            background: #2c3e50;
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .result-row:last-child {
+            border-bottom: none;
+        }
+        .result-label {
+            font-weight: bold;
+        }
+        .result-value {
+            font-size: 18px;
+        }
+        .highlight {
+            color: #2ecc71;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        #license-info {
+            margin: 15px 0;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #3498db;
+        }
+        .license-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .license-detail {
+            margin: 2px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>No-KYC Crypto Poker Profit Calculator</h1>
+    
+    <div class="calculator">
+        <div class="row">
+            <div class="col">
+                <label for="jurisdiction">Licensing Jurisdiction<span class="tooltip" data-tip="Different jurisdictions have different costs and KYC requirements">ⓘ</span></label>
+                <select id="jurisdiction" onchange="updateLicenseInfo()">
+                    <option value="curacao">Curaçao Gaming License</option>
+                    <option value="anjouan">Anjouan (Comoros) License</option>
+                    <option value="costarica">Costa Rica (No Formal License)</option>
+                    <option value="kahnawake">Kahnawake Gaming Commission</option>
+                    <option value="vanuatu">Vanuatu License</option>
+                </select>
+                
+                <div id="license-info">
+                    <!-- License info will be filled by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="col">
+                <label for="player-count">Active Players<span class="tooltip" data-tip="Monthly active players using your platform">ⓘ</span></label>
+                <input type="number" id="player-count" value="500" min="10" step="10">
+                
+                <label for="player-type">Player Type<span class="tooltip" data-tip="Different player types generate different amounts of rake">ⓘ</span></label>
+                <select id="player-type">
+                    <option value="casual">Mostly Casual (€150/year ARPU)</option>
+                    <option value="mixed" selected>Mixed Player Base (€250/year ARPU)</option>
+                    <option value="grinders">Heavy Grinders (€400/year ARPU)</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col">
+                <label for="rake-percent">Rake Percentage<span class="tooltip" data-tip="Percentage taken from each pot, typically 5%">ⓘ</span></label>
+                <input type="number" id="rake-percent" value="5" min="1" max="10" step="0.5">
+            </div>
+            
+            <div class="col">
+                <label for="dev-cost">One-time Development Cost (€)<span class="tooltip" data-tip="Cost to build your platform">ⓘ</span></label>
+                <input type="number" id="dev-cost" value="30000" min="5000" step="1000">
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col">
+                <label for="infra-cost">Monthly Infrastructure Cost (€)<span class="tooltip" data-tip="Servers, hosting, bandwidth, etc.">ⓘ</span></label>
+                <input type="number" id="infra-cost" value="2000" min="500" step="100">
+            </div>
+            
+            <div class="col">
+                <label for="staff-cost">Monthly Staff Cost (€)<span class="tooltip" data-tip="Support, moderation, administration">ⓘ</span></label>
+                <input type="number" id="staff-cost" value="3000" min="0" step="100">
+            </div>
+        </div>
+        
+        <button onclick="calculateProfits()">Calculate Profits</button>
+    </div>
+    
+    <div class="results" id="results">
+        <div class="result-row">
+            <div class="result-label">Initial Setup Cost:</div>
+            <div class="result-value" id="initial-cost">€0</div>
+        </div>
+        <div class="result-row">
+            <div class="result-label">Monthly Revenue:</div>
+            <div class="result-value" id="monthly-revenue">€0</div>
+        </div>
+        <div class="result-row">
+            <div class="result-label">Monthly Costs:</div>
+            <div class="result-value" id="monthly-costs">€0</div>
+        </div>
+        <div class="result-row">
+            <div class="result-label">Monthly Profit:</div>
+            <div class="result-value highlight" id="monthly-profit">€0</div>
+        </div>
+        <div class="result-row">
+            <div class="result-label">Yearly Profit:</div>
+            <div class="result-value highlight" id="yearly-profit">€0</div>
+        </div>
+        <div class="result-row">
+            <div class="result-label">Months to Break Even:</div>
+            <div class="result-value" id="breakeven">0 months</div>
+        </div>
+    </div>
+    
+    <script>
+        // License data based on real-world information
+        const licenseData = {
+            curacao: {
+                name: "Curaçao Gaming License",
+                initialFee: 4600,
+                yearlyFee: 60000,
+                taxRate: 0.02, // 2% base tier
+                kycRequirement: "KYC threshold at €2,200 (deferred KYC allowed)",
+                processingTime: "3-6 months",
+                notes: "Most recognized crypto-gambling jurisdiction"
+            },
+            anjouan: {
+                name: "Anjouan (Comoros) License",
+                initialFee: 17000,
+                yearlyFee: 15300,
+                taxRate: 0.0, // 0% tax
+                kycRequirement: "Standard AML policy required",
+                processingTime: "2 months",
+                notes: "Cheapest fully licensed option"
+            },
+            costarica: {
+                name: "Costa Rica (No Formal License)",
+                initialFee: 7000,
+                yearlyFee: 3000,
+                taxRate: 0.0, // Offshore income not taxed
+                kycRequirement: "Minimal requirements",
+                processingTime: "1 month",
+                notes: "No formal gambling license, just business registration"
+            },
+            kahnawake: {
+                name: "Kahnawake Gaming Commission",
+                initialFee: 45000,
+                yearlyFee: 15000,
+                taxRate: 0.0, // 0% tax
+                kycRequirement: "Full KYC required for all players",
+                processingTime: "2-3 months",
+                notes: "Respected license but requires full KYC"
+            },
+            vanuatu: {
+                name: "Vanuatu License",
+                initialFee: 5000,
+                yearlyFee: 10000,
+                taxRate: 0.0, // 0% tax
+                kycRequirement: "Standard AML policy required",
+                processingTime: "2 months",
+                notes: "Low-tax, crypto-friendly option"
+            }
+        };
+        
+        // Player type data based on real-world averages
+        const playerTypeData = {
+            casual: {
+                name: "Mostly Casual",
+                arpu: 150, // Annual revenue per user
+                churnRate: 0.1, // Monthly player turnover
+            },
+            mixed: {
+                name: "Mixed Player Base",
+                arpu: 250,
+                churnRate: 0.08,
+            },
+            grinders: {
+                name: "Heavy Grinders",
+                arpu: 400,
+                churnRate: 0.05,
+            }
+        };
+        
+        // Update license information when selection changes
+        function updateLicenseInfo() {
+            const jurisdiction = document.getElementById('jurisdiction').value;
+            const licenseInfo = licenseData[jurisdiction];
+            
+            const infoHTML = `
+                <div class="license-header">${licenseInfo.name}</div>
+                <div class="license-detail">Initial fee: €${licenseInfo.initialFee.toLocaleString()}</div>
+                <div class="license-detail">Annual fee: €${licenseInfo.yearlyFee.toLocaleString()}</div>
+                <div class="license-detail">Corporate tax rate: ${(licenseInfo.taxRate * 100)}%</div>
+                <div class="license-detail">KYC requirements: ${licenseInfo.kycRequirement}</div>
+                <div class="license-detail">License processing time: ${licenseInfo.processingTime}</div>
+                <div class="license-detail">Note: ${licenseInfo.notes}</div>
+            `;
+            
+            document.getElementById('license-info').innerHTML = infoHTML;
+        }
+        
+        // Calculate profits based on inputs
+        function calculateProfits() {
+            // Get input values
+            const jurisdiction = document.getElementById('jurisdiction').value;
+            const playerCount = parseInt(document.getElementById('player-count').value);
+            const playerType = document.getElementById('player-type').value;
+            const rakePercent = parseFloat(document.getElementById('rake-percent').value) / 100;
+            const devCost = parseInt(document.getElementById('dev-cost').value);
+            const infraCost = parseInt(document.getElementById('infra-cost').value);
+            const staffCost = parseInt(document.getElementById('staff-cost').value);
+            
+            // Get license and player data
+            const license = licenseData[jurisdiction];
+            const playerData = playerTypeData[playerType];
+            
+            // Calculate initial setup cost
+            const initialCost = devCost + license.initialFee;
+            
+            // Calculate monthly revenue
+            const annualArpu = playerData.arpu;
+            const monthlyArpu = annualArpu / 12;
+            const monthlyRevenue = playerCount * monthlyArpu;
+            
+            // Calculate monthly costs
+            const monthlyLicenseFee = license.yearlyFee / 12;
+            const kycCost = playerCount * 0.1 * 2; // Rough estimate for KYC costs
+            const totalMonthlyCost = infraCost + staffCost + monthlyLicenseFee + kycCost;
+            
+            // Calculate profits
+            const monthlyProfitBeforeTax = monthlyRevenue - totalMonthlyCost;
+            const monthlyTax = monthlyProfitBeforeTax * license.taxRate;
+            const monthlyProfit = monthlyProfitBeforeTax - monthlyTax;
+            const yearlyProfit = monthlyProfit * 12;
+            
+            // Calculate months to break even
+            const breakEvenMonths = initialCost / monthlyProfit;
+            
+            // Update results
+            document.getElementById('initial-cost').textContent = `€${initialCost.toLocaleString()}`;
+            document.getElementById('monthly-revenue').textContent = `€${monthlyRevenue.toLocaleString()}`;
+            document.getElementById('monthly-costs').textContent = `€${totalMonthlyCost.toLocaleString()}`;
+            document.getElementById('monthly-profit').textContent = `€${monthlyProfit.toLocaleString()}`;
+            document.getElementById('yearly-profit').textContent = `€${yearlyProfit.toLocaleString()}`;
+            document.getElementById('breakeven').textContent = `${breakEvenMonths.toFixed(1)} months`;
+        }
+        
+        // Initialize the page
+        window.onload = function() {
+            updateLicenseInfo();
+            calculateProfits();
+        };
+    </script>
+</body>
+</html>
