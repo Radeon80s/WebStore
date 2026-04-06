@@ -5,7 +5,7 @@
 [![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-orange.svg)](https://www.sqlalchemy.org/)
 [![Railway](https://img.shields.io/badge/Railway-Deployment-brightgreen.svg)](https://railway.app/)
 
-## ✨ Features
+## Features
 
 ### Customer Features
 - **Product Catalog** - Browse products with search functionality
@@ -17,11 +17,7 @@
 - **User Authentication** - Secure login with role-based access
 - **Admin Dashboard** - Manage product catalog
 
-## 🌐 Demo
-
-A live demo is available at: [https://web-production-2b47.up.railway.app/](https://web-production-2b47.up.railway.app/)
-
-## 🔧 Tech Stack
+## Tech Stack
 
 ### Backend
 - **Python** with **Flask** framework
@@ -38,7 +34,7 @@ A live demo is available at: [https://web-production-2b47.up.railway.app/](https
 - **Railway** for deployment
 - **Gunicorn** as WSGI HTTP Server
 
-## 🚀 Installation
+##  Installation
 
 ### Prerequisites
 - Python 3.7+
@@ -54,14 +50,14 @@ A live demo is available at: [https://web-production-2b47.up.railway.app/](https
    ```
 
 
-## 🔐 Environment Variables
+##  Environment Variables
 
 | Variable | Description | Env Variable |
 |----------|-------------|---------|
 | `DATABASE_URL` | PostgreSQL connection string | `server-side` |
 | `SECRET_KEY` | Flask secret key for session security | `server-side` |
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 Webstore/
@@ -97,7 +93,7 @@ Webstore/
 1. **Register**: Create a new account with your email
 2. **Login**: Access your account with your credentials
 
-## 👩‍💼 Admin
+## Admin
 
 ### Managing Products
 
@@ -105,7 +101,7 @@ Webstore/
 - **Edit Products**: Click the Edit button next to a product
 - **Delete Products**: Click the Delete button next to a product
 
-## 🔌 API Endpoints
+##  API Endpoints
 
 | Endpoint | Method | Description | Auth Required |
 |----------|--------|-------------|--------------|
@@ -122,7 +118,7 @@ Webstore/
 | `/admin/discounts/<id>/delete` | POST | Delete a discount code | Yes (admin) |
 
 
-## 🚢 Deployment
+##  Deployment
 
 ### Deploying to Railway
 ```
